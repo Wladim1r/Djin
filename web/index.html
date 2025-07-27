@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление данными</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            height: 150px;
+            width: auto;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: -10px;
+        }
+
+        .title-container h3 {
+            margin: 0;
+            color: #333;
+            font-size: 2.2em;
+            padding-bottom: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            min-height: 0;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            align-items: center;
+        }
+
+        .action-button {
+            padding: 20px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .fill-data-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .fill-data-btn:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .view-data-btn {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .view-data-btn:hover {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .location-container {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                height: 130px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.8em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .logo {
+                height: 110px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.6em;
+            }
+
+            .button-container {
+                max-width: 300px;
+            }
+
+            .action-button {
+                padding: 18px 25px;
+                font-size: 16px;
+            }
+
+            .location-container {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                height: 90px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.4em;
+            }
+
+            .main-content {
+                gap: 15px;
+            }
+
+            .button-container {
+                gap: 15px;
+                max-width: 280px;
+            }
+
+            .action-button {
+                padding: 15px 20px;
+                font-size: 15px;
+            }
+
+            .location-container {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo {
+                height: 80px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.3em;
+            }
+
+            .action-button {
+                padding: 12px 18px;
+                font-size: 14px;
+            }
+
+            .location-container {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="./images/djin_logo.png" alt="Логотип компании" class="logo">
+    </div>
+
+    <div class="title-container">
+        <h3>Управление данными</h3>
+    </div>
+
+    <div class="main-content">
+        <div class="button-container">
+            <a href="/inputStat.html" class="action-button fill-data-btn">
+                📝 Заполнить данные
+            </a>
+            <a href="/viewStats.html" class="action-button view-data-btn">
+                📊 Посмотреть данные
+            </a>
+        </div>
+    </div>
+
+    <div class="location-container">
+        <div>Краснодарский край</div>
+        <div>г. Тихорецк</div>
+    </div>
+</body>
+</html>

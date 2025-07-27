@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр статистики</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            padding: 6px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            font-size: 13px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .header-title {
+            text-align: center;
+            width: 100%;
+        }
+
+        .header-title h4 {
+            margin: 0;
+            font-size: 1.3em;
+            padding: 0 60px;
+        }
+
+        .logo {
+            height: 50px;
+            width: auto;
+            position: absolute;
+            right: 0;
+        }
+
+        /* Общая статистика в табличном стиле */
+        .total-stats-container {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .total-stats-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-stats-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .copy-button {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+
+        .copy-button.copied {
+            background-color: #28a745;
+        }
+
+        .total-stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .total-stats-table th,
+        .total-stats-table td {
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .total-stats-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .total-stats-table .category-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .total-stats-table .seed-col {
+            background-color: rgba(255, 140, 0, 0.12);
+        }
+
+        .total-stats-table .pumpkin-col {
+            background-color: rgba(34, 139, 34, 0.12);
+        }
+
+        .total-stats-table .peanut-col {
+            background-color: rgba(178, 34, 34, 0.12);
+        }
+
+        .total-stats-table .metrics-col {
+            background-color: rgba(108, 117, 125, 0.12);
+        }
+
+        .positive {
+            color: #28a745;
+        }
+
+        .negative {
+            color: #dc3545;
+        }
+
+        /* Таблица для индивидуальной статистики */
+        .stats-table-container {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .stats-table-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .stats-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .stats-table td:first-child {
+            text-align: left;
+            font-weight: bold;
+            background-color: #f8f9fa;
+            min-width: 120px;
+        }
+
+        .stats-table .product-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .stats-table .seed-col {
+            background-color: rgba(255, 140, 0, 0.12);
+        }
+
+        .stats-table .pumpkin-col {
+            background-color: rgba(34, 139, 34, 0.12);
+        }
+
+        .stats-table .peanut-col {
+            background-color: rgba(178, 34, 34, 0.12);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .no-data {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header-title h4 {
+                font-size: 1.1em;
+                padding: 0 50px;
+            }
+            
+            .logo {
+                height: 40px;
+            }
+            
+            .total-stats-table,
+            .stats-table {
+                font-size: 10px;
+            }
+            
+            .total-stats-table th,
+            .total-stats-table td,
+            .stats-table th,
+            .stats-table td {
+                padding: 6px 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title h4 {
+                font-size: 1em;
+                padding: 0 40px;
+            }
+            
+            .logo {
+                height: 35px;
+            }
+            
+            .back-button {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <a href="index.html" class="back-button">← Назад</a>
+        <div class="header-title">
+            <h4>Статистика отчетов</h4>
+        </div>
+        <img src="./images/djin_logo.png" alt="Логотип компании" class="logo">
+    </div>
+
+    <div id="loadingTotal" class="loading">Загрузка общей статистики...</div>
+    <div id="totalStatsContainer"></div>
+
+    <div id="loadingStats" class="loading">Загрузка отчетов...</div>
+    <div id="statsContainer"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/djin';
+    
+        async function loadTotalStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/total`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                displayTotalStats(data);
+            } catch (error) {
+                console.error('Ошибка при загрузке общей статистики:', error);
+                document.getElementById('totalStatsContainer').innerHTML = 
+                    `<div class="no-data">📊 Данные общей статистики пока недоступны</div>`;
+            } finally {
+                document.getElementById('loadingTotal').style.display = 'none';
+            }
+        }
+    
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/stat`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const stats = await response.json();
+                
+                // Добавляем вычисление разниц, если их нет от сервера
+                const statsWithDiff = stats.map(stat => ({
+                    ...stat,
+                    seed_dif: (stat.seed_fact || 0) - (stat.seed_plan || 0),
+                    pumpkin_dif: (stat.pumpkin_fact || 0) - (stat.pumpkin_plan || 0),
+                    peanut_dif: (stat.peanut_fact || 0) - (stat.peanut_plan || 0)
+                }));
+                
+                displayStats(statsWithDiff);
+            } catch (error) {
+                console.error('Ошибка при загрузке статистики:', error);
+                document.getElementById('statsContainer').innerHTML = 
+                    `<div class="no-data">👥 Данные от торговых представителей пока недоступны</div>`;
+            } finally {
+                document.getElementById('loadingStats').style.display = 'none';
+            }
+        }
+    
+        function displayTotalStats(data) {
+            const container = document.getElementById('totalStatsContainer');
+
+            console.log(data)
+            
+            container.innerHTML = `
+                <div class="total-stats-container">
+                    <div class="total-stats-header">
+                        <div class="total-stats-title">📊 Общая статистика (Количество отчетов: ${data.total_reports || 0})</div>
+                        <button class="copy-button" onclick="copyTotalStats()">📋 Копировать</button>
+                    </div>
+                    
+                    <table class="total-stats-table">
+                        <thead>
+                            <tr>
+                                <th colspan="3" class="product-header seed-col">🌻 Семечка</th>
+                                <th colspan="3" class="product-header pumpkin-col">🎃 Тыква</th>
+                                <th colspan="3" class="product-header peanut-col">🥜 Арахис</th>
+                                <th rowspan="2">АКБ1</th>
+                                <th rowspan="2">АКБ2</th>
+                                <th rowspan="2">Новые ТТ</th>
+                                <th rowspan="2">Микс</th>
+                                <th rowspan="2">N+1</th>
+                                <th rowspan="2">Уст. стеллажа</th>
+                                <th rowspan="2">ДМП</th>
+                                <th rowspan="2">Топ 5</th>
+                                <th rowspan="2">Новинки</th>
+                            </tr>
+                            <tr>
+                                <th class="seed-col">План</th>
+                                <th class="seed-col">Факт</th>
+                                <th class="seed-col">Разн.</th>
+                                <th class="pumpkin-col">План</th>
+                                <th class="pumpkin-col">Факт</th>
+                                <th class="pumpkin-col">Разн.</th>
+                                <th class="peanut-col">План</th>
+                                <th class="peanut-col">Факт</th>
+                                <th class="peanut-col">Разн.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="seed-col">${(data.total_seed_plan || 0).toFixed(1)}</td>
+                                <td class="seed-col">${(data.total_seed_fact || 0).toFixed(1)}</td>
+                                <td class="seed-col ${(data.total_seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
+                                </td>
+                                <td class="pumpkin-col">${(data.total_pumpkin_plan || 0).toFixed(1)}</td>
+                                <td class="pumpkin-col">${(data.total_pumpkin_fact || 0).toFixed(1)}</td>
+                                <td class="pumpkin-col ${(data.total_pumpkin_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
+                                </td>
+                                <td class="peanut-col">${(data.total_peanut_plan || 0).toFixed(1)}</td>
+                                <td class="peanut-col">${(data.total_peanut_fact || 0).toFixed(1)}</td>
+                                <td class="peanut-col ${(data.total_peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
+                                </td>
+                                <td>${data.total_akb1 || 0}</td>
+                                <td>${data.total_akb2 || 0}</td>
+                                <td>${data.total_newtt || 0}</td>
+                                <td>${data.total_mix || 0}</td>
+                                <td>${data.total_npone || 0}</td>
+                                <td>${data.total_set_shelving || 0}</td>
+                                <td>${data.total_dmp || 0}</td>
+                                <td>${data.total_top_five || 0}</td>
+                                <td>${data.total_news || 0}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Сохраняем данные для копирования
+            window.totalStatsData = data;
+        }
+    
+        // Функция для копирования общей статистики в буфер обмена
+        async function copyTotalStats() {
+            if (!window.totalStatsData) {
+                alert('Данные для копирования не найдены');
+                return;
+            }
+            
+            const data = window.totalStatsData;
+            const text = `ОБЩАЯ СТАТИСТИКА (Количество отчетов: ${data.total_reports || 0})
+
+🌻 СЕМЕЧКА:
+План: ${(data.total_seed_plan || 0).toFixed(1)}
+Факт: ${(data.total_seed_fact || 0).toFixed(1)}
+Разница: ${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
+
+🎃 ТЫКВА:
+План: ${(data.total_pumpkin_plan || 0).toFixed(1)}
+Факт: ${(data.total_pumpkin_fact || 0).toFixed(1)}
+Разница: ${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
+
+🥜 АРАХИС:
+План: ${(data.total_peanut_plan || 0).toFixed(1)}
+Факт: ${(data.total_peanut_fact || 0).toFixed(1)}
+Разница: ${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
+
+ДОПОЛНИТЕЛЬНЫЕ ПОКАЗАТЕЛИ:
+АКБ1: ${data.total_akb1 || 0}
+АКБ2: ${data.total_akb2 || 0}
+Новые ТТ: ${data.total_newtt || 0}
+Микс: ${data.total_mix || 0}
+N + 1: ${data.total_npone || 0}
+Установка стеллажа: ${data.total_set_shelving || 0}
+ДМП: ${data.total_dmp || 0}
+Топ 5: ${data.total_top_five || 0}
+Новинки: ${data.total_news || 0}`;
+
+            const button = document.querySelector('.copy-button');
+            
+            try {
+                // Проверяем доступность Clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    // Fallback для старых браузеров или небезопасного контекста
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (!successful) {
+                        throw new Error('execCommand failed');
+                    }
+                }
+                
+                // Показываем успешное копирование
+                const originalText = button.textContent;
+                button.textContent = '✅ Скопировано!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Ошибка копирования: ', err);
+                
+                // Последний fallback - показываем текст в prompt
+                const userAgent = navigator.userAgent.toLowerCase();
+                if (userAgent.includes('mobile') || userAgent.includes('android') || userAgent.includes('iphone')) {
+                    // На мобильных устройствах показываем alert с текстом
+                    alert('Скопируйте текст:\n\n' + text);
+                } else {
+                    // На десктопе показываем prompt
+                    prompt('Нажмите Ctrl+C для копирования:', text);
+                }
+            }
+        }
+
+        function displayStats(stats) {
+            const container = document.getElementById('statsContainer');
+            
+            if (!stats || stats.length === 0) {
+                container.innerHTML = '<div class="no-data">👥 Отчеты по сотрудникам пока не поступили</div>';
+                return;
+            }
+    
+            const tableRows = stats.map(stat => `
+                <tr>
+                    <td>${stat.name || 'Не указано'}</td>
+                    <td class="seed-col">${(stat.seed_plan || 0).toFixed(1)}</td>
+                    <td class="seed-col">${(stat.seed_fact || 0).toFixed(1)}</td>
+                    <td class="seed-col ${(stat.seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                        ${(stat.seed_dif || 0) >= 0 ? '+' : ''}${(stat.seed_dif || 0).toFixed(1)}
+                    </td>
+                    <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(1)}</td>
+                    <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(1)}</td>
+                    <td class="pumpkin-col ${(stat.pumpkin_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                        ${(stat.pumpkin_dif || 0) >= 0 ? '+' : ''}${(stat.pumpkin_dif || 0).toFixed(1)}
+                    </td>
+                    <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(1)}</td>
+                    <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(1)}</td>
+                    <td class="peanut-col ${(stat.peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                        ${(stat.peanut_dif || 0) >= 0 ? '+' : ''}${(stat.peanut_dif || 0).toFixed(1)}
+                    </td>
+                    <td>${stat.akb1 || 0}</td>
+                    <td>${stat.akb2 || 0}</td>
+                    <td>${stat.newtt || 0}</td>
+                    <td>${stat.mix || 0}</td>
+                    <td>${stat.npone || 0}</td>
+                    <td>${stat.set_shelving || 0}</td>
+                    <td>${stat.dmp || 0}</td>
+                    <td>${stat.top_five || 0}</td>
+                    <td>${stat.news || 0}</td>
+                </tr>
+            `).join('');
+
+            console.log(stats)
+    
+            container.innerHTML = `
+                <div class="stats-table-container">
+                    <div class="stats-table-title">👥 Отчеты от торговых представителей</div>
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Имя</th>
+                                <th colspan="3" class="product-header seed-col">🌻 Семечка</th>
+                                <th colspan="3" class="product-header pumpkin-col">🎃 Тыква</th>
+                                <th colspan="3" class="product-header peanut-col">🥜 Арахис</th>
+                                <th rowspan="2">АКБ1</th>
+                                <th rowspan="2">АКБ2</th>
+                                <th rowspan="2">Новые ТТ</th>
+                                <th rowspan="2">Микс</th>
+                                <th rowspan="2">N+1</th>
+                                <th rowspan="2">Уст. стеллажа</th>
+                                <th rowspan="2">ДМП</th>
+                                <th rowspan="2">Топ 5</th>
+                                <th rowspan="2">Новинки</th>
+                            </tr>
+                            <tr>
+                                <th class="seed-col">План</th>
+                                <th class="seed-col">Факт</th>
+                                <th class="seed-col">Разн.</th>
+                                <th class="pumpkin-col">План</th>
+                                <th class="pumpkin-col">Факт</th>
+                                <th class="pumpkin-col">Разн.</th>
+                                <th class="peanut-col">План</th>
+                                <th class="peanut-col">Факт</th>
+                                <th class="peanut-col">Разн.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+    
+        // Загружаем данные при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTotalStats();
+            loadStats();
+        });
+    </script>
+</body>
+</html>

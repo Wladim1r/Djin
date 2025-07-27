@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в систему</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            height: 150px;
+            width: auto;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: -10px;
+        }
+
+        .title-container h3 {
+            margin: 0;
+            color: #333;
+            font-size: 2.2em;
+            padding-bottom: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            min-height: 0;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .password-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input {
+            padding: 15px;
+            padding-right: 50px; /* место для кнопки показа пароля */
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: #2196F3;
+        }
+
+        .login-button {
+            padding: 18px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 6px;
+            border-left: 4px solid #f44336;
+            display: none;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+            background-color: #e8f5e8;
+            border-radius: 6px;
+            border-left: 4px solid #4CAF50;
+            display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #2196F3;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #1976D2;
+            text-decoration: underline;
+        }
+
+        .location-container {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                height: 130px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.8em;
+            }
+
+            .login-form {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .logo {
+                height: 110px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.6em;
+            }
+
+            .login-form {
+                max-width: 300px;
+                padding: 20px;
+            }
+
+            .form-input {
+                padding: 12px;
+                padding-right: 45px;
+                font-size: 15px;
+            }
+
+            .login-button {
+                padding: 15px 25px;
+                font-size: 16px;
+            }
+
+            .location-container {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                height: 90px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.4em;
+            }
+
+            .main-content {
+                gap: 15px;
+            }
+
+            .login-form {
+                gap: 15px;
+                max-width: 280px;
+                padding: 18px;
+            }
+
+            .form-input {
+                padding: 10px;
+                padding-right: 40px;
+                font-size: 14px;
+            }
+
+            .login-button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+
+            .location-container {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo {
+                height: 80px;
+            }
+            
+            .title-container h3 {
+                font-size: 1.3em;
+            }
+
+            .form-input {
+                padding: 8px;
+                padding-right: 35px;
+                font-size: 13px;
+            }
+
+            .login-button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .location-container {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="./images/djin_logo.png" alt="Логотип компании" class="logo">
+    </div>
+
+    <div class="title-container">
+        <h3>Вход в систему</h3>
+    </div>
+
+    <div class="main-content">
+        <form class="login-form" id="loginForm">
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">🔐 Пароль</label>
+                <div class="password-input-container">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="Введите пароль"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="toggle-password" id="togglePassword" title="Показать/скрыть пароль">
+                        👁
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-button" id="loginButton">
+                Войти
+            </button>
+        </form>
+    </div>
+
+    <div class="location-container">
+        <div>Краснодарский край</div>
+        <div>г. Тихорецк</div>
+    </div>
+
+    <script>
+        // Функция показа/скрытия пароля
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const toggleButton = document.getElementById('togglePassword');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.innerHTML = '🙈'; // закрытый глаз
+                toggleButton.title = 'Скрыть пароль';
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.innerHTML = '👁'; // открытый глаз
+                toggleButton.title = 'Показать пароль';
+            }
+        });
+
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const loginButton = document.getElementById('loginButton');
+            
+            // Скрываем сообщения
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Простая валидация
+            if (!password) {
+                errorMessage.textContent = 'Пожалуйста, введите пароль';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Отключаем кнопку во время запроса
+            loginButton.disabled = true;
+            loginButton.textContent = 'Проверка...';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Успешная авторизация
+                    loginButton.textContent = 'Успешно!';
+                    loginButton.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                    
+                    successMessage.textContent = 'Вход выполнен успешно! Перенаправление...';
+                    successMessage.style.display = 'block';
+                    
+                    // Перенаправляем на главную страницу
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    // Ошибка авторизации
+                    throw new Error(data.message || 'Неверный пароль');
+                }
+            } catch (error) {
+                // Показываем ошибку
+                let errorText = 'Произошла ошибка при входе в систему';
+                
+                if (error.message) {
+                    errorText = error.message;
+                } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorText = 'Ошибка соединения с сервером';
+                }
+                
+                errorMessage.textContent = errorText;
+                errorMessage.style.display = 'block';
+                
+                // Очищаем поле пароля только при неверном пароле
+                if (errorText.includes('пароль')) {
+                    document.getElementById('password').value = '';
+                }
+                document.getElementById('password').focus();
+            } finally {
+                // Возвращаем кнопку в исходное состояние
+                loginButton.disabled = false;
+                loginButton.textContent = 'Войти';
+            }
+        });
+
+        // Автофокус на поле пароля при загрузке страницы
+        window.addEventListener('load', function() {
+            document.getElementById('password').focus();
+        });
+
+        // Обработка Enter в поле пароля
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
