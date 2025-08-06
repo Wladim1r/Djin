@@ -6,4 +6,5 @@ var (
 	ErrDBOperation = errors.New("database operation failed")
 	ErrNotFound    = errors.New("record not found")
 	ErrUniqueName  = errors.New("duplicate name")
+	ErrBadRequest  = errors.New("bad request")
 )

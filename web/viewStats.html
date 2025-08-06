@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Просмотр статистики</title>
+    <link rel="icon" href="./images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -216,6 +217,193 @@
             background-color: rgba(178, 34, 34, 0.12);
         }
 
+        /* Стили для кнопки редактирования - ОБНОВЛЕНО (квадратный фон) */
+        .edit-button {
+            background-color: rgba(0, 123, 255, 0.1);
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+
+        .edit-button:hover {
+            background-color: rgba(0, 123, 255, 0.2);
+        }
+
+        /* Модальное окно - ОПТИМИЗИРОВАНО ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10px auto;
+            padding: 0;
+            border: none;
+            border-radius: 8px;
+            width: 95%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+
+        .close {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 15px;
+        }
+
+        /* Форма редактирования - ОПТИМИЗИРОВАНА ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
+        .edit-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .form-group input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            /* Убираем стрелки для number input */
+            -moz-appearance: textfield;
+        }
+
+        .form-group input::-webkit-outer-spin-button,
+        .form-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* Группировка полей - ОПТИМИЗИРОВАНА */
+        .field-group {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .field-group-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 13px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        /* Кнопки модального окна - ОПТИМИЗИРОВАНЫ */
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            background-color: #f8f9fa;
+            border-radius: 0 0 8px 8px;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            min-width: 80px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .loading {
             text-align: center;
             padding: 15px;
@@ -234,6 +422,7 @@
             font-size: 13px;
         }
 
+        /* Адаптивные стили - ОБНОВЛЕНЫ ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -259,28 +448,81 @@
             .stats-table td {
                 padding: 6px 4px;
             }
-        }
 
-        @media (max-width: 480px) {
-            .header-title h4 {
-                font-size: 1em;
-                padding: 0 40px;
+            .modal-content {
+                width: 98%;
+                margin: 5px auto;
+                max-width: none;
+            }
+
+            /* Оптимизация для горизонтальной ориентации */
+            @media (orientation: landscape) {
+                .edit-form {
+                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                    gap: 10px;
+                }
+                
+                .form-group input {
+                    padding: 6px;
+                    font-size: 13px;
+                }
+                
+                .field-group {
+                    padding: 10px;
+                }
+                
+                .modal-header,
+                .modal-buttons {
+                    padding: 10px;
+                }
+                
+                .btn {
+                    padding: 8px 12px;
+                    font-size: 13px;
+                    min-width: 70px;
+                }
             }
             
-            .logo {
-                height: 35px;
-            }
-            
-            .back-button {
-                padding: 5px 10px;
-                font-size: 12px;
+            /* Улучшение для очень узких экранов */
+            @media (max-width: 420px) {
+                .header-title h4 {
+                    font-size: 1em;
+                    padding: 0 40px;
+                }
+                
+                .logo {
+                    height: 35px;
+                }
+                
+                .back-button {
+                    padding: 5px 10px;
+                    font-size: 12px;
+                }
+                
+                .stats-table td:first-child {
+                    min-width: 100px;
+                    max-width: 100px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                
+                .edit-button {
+                    margin-left: 4px;
+                    width: 22px;
+                    height: 22px;
+                    font-size: 12px;
+                }
+                
+                .modal-title {
+                    font-size: 14px;
+                }
             }
         }
     </style>
 </head>
 <body>
     <div class="header-container">
-        <a href="index.html" class="back-button">← Назад</a>
+        <a href="/dashboard" class="back-button">← Назад</a>
         <div class="header-title">
             <h4>Статистика отчетов</h4>
         </div>
@@ -293,8 +535,110 @@
     <div id="loadingStats" class="loading">Загрузка отчетов...</div>
     <div id="statsContainer"></div>
 
+    <!-- Модальное окно для редактирования -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Редактирование данных сотрудника</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="field-group">
+                        <div class="field-group-title">🌻 Семечка</div>
+                        <div class="edit-form">
+                            <div class="form-group">
+                                <label for="seed_plan">План</label>
+                                <input type="number" id="seed_plan" name="seed_plan" step="0.1" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="seed_fact">Факт</label>
+                                <input type="number" id="seed_fact" name="seed_fact" step="0.1" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-group-title">🎃 Тыква</div>
+                        <div class="edit-form">
+                            <div class="form-group">
+                                <label for="pumpkin_plan">План</label>
+                                <input type="number" id="pumpkin_plan" name="pumpkin_plan" step="0.1" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="pumpkin_fact">Факт</label>
+                                <input type="number" id="pumpkin_fact" name="pumpkin_fact" step="0.1" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-group-title">🥜 Арахис</div>
+                        <div class="edit-form">
+                            <div class="form-group">
+                                <label for="peanut_plan">План</label>
+                                <input type="number" id="peanut_plan" name="peanut_plan" step="0.1" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="peanut_fact">Факт</label>
+                                <input type="number" id="peanut_fact" name="peanut_fact" step="0.1" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-group-title">📊 Дополнительные показатели</div>
+                        <div class="edit-form">
+                            <div class="form-group">
+                                <label for="akb1">АКБ1</label>
+                                <input type="number" id="akb1" name="akb1" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="akb2">АКБ2</label>
+                                <input type="number" id="akb2" name="akb2" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="newtt">Новые ТТ</label>
+                                <input type="number" id="newtt" name="newtt" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="mix">Микс</label>
+                                <input type="number" id="mix" name="mix" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="npone">N+1</label>
+                                <input type="number" id="npone" name="npone" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="set_shelving">Установка стеллажа</label>
+                                <input type="number" id="set_shelving" name="set_shelving" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="dmp">ДМП</label>
+                                <input type="number" id="dmp" name="dmp" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="top_five">Топ 5</label>
+                                <input type="number" id="top_five" name="top_five" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="news">Новинки</label>
+                                <input type="number" id="news" name="news" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="cancelEdit">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveEdit">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE_URL = 'http://localhost:8080/djin';
+        let currentEditingData = null;
     
         async function loadTotalStats() {
             try {
@@ -339,8 +683,6 @@
     
         function displayTotalStats(data) {
             const container = document.getElementById('totalStatsContainer');
-
-            console.log(data)
             
             container.innerHTML = `
                 <div class="total-stats-container">
@@ -413,7 +755,6 @@
             window.totalStatsData = data;
         }
     
-        // Функция для копирования общей статистики в буфер обмена
         async function copyTotalStats() {
             if (!window.totalStatsData) {
                 alert('Данные для копирования не найдены');
@@ -421,26 +762,20 @@
             }
             
             const data = window.totalStatsData;
-            const text = `ОБЩАЯ СТАТИСТИКА (Количество отчетов: ${data.total_reports || 0})
+            const totalAkb = (data.total_akb1 || 0) + (data.total_akb2 || 0);
+            const text = `ОБЩАЯ СТАТИСТИКА за ${formatDateForDisplay(displayDate)} (Отчетов: ${data.total_reports || 0})
 
 🌻 СЕМЕЧКА:
-План: ${(data.total_seed_plan || 0).toFixed(1)}
-Факт: ${(data.total_seed_fact || 0).toFixed(1)}
-Разница: ${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
+${(data.total_seed_plan || 0).toFixed(1)}/${(data.total_seed_fact || 0).toFixed(1)}/${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
 
 🎃 ТЫКВА:
-План: ${(data.total_pumpkin_plan || 0).toFixed(1)}
-Факт: ${(data.total_pumpkin_fact || 0).toFixed(1)}
-Разница: ${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
+${(data.total_pumpkin_plan || 0).toFixed(1)}/${(data.total_pumpkin_fact || 0).toFixed(1)}/${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
 
 🥜 АРАХИС:
-План: ${(data.total_peanut_plan || 0).toFixed(1)}
-Факт: ${(data.total_peanut_fact || 0).toFixed(1)}
-Разница: ${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
+${(data.total_peanut_plan || 0).toFixed(1)}/${(data.total_peanut_fact || 0).toFixed(1)}/${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
 
 ДОПОЛНИТЕЛЬНЫЕ ПОКАЗАТЕЛИ:
-АКБ1: ${data.total_akb1 || 0}
-АКБ2: ${data.total_akb2 || 0}
+АКБ: ${totalAkb}
 Новые ТТ: ${data.total_newtt || 0}
 Микс: ${data.total_mix || 0}
 N + 1: ${data.total_npone || 0}
@@ -452,11 +787,9 @@ N + 1: ${data.total_npone || 0}
             const button = document.querySelector('.copy-button');
             
             try {
-                // Проверяем доступность Clipboard API
                 if (navigator.clipboard && window.isSecureContext) {
                     await navigator.clipboard.writeText(text);
                 } else {
-                    // Fallback для старых браузеров или небезопасного контекста
                     const textArea = document.createElement('textarea');
                     textArea.value = text;
                     textArea.style.position = 'fixed';
@@ -474,7 +807,6 @@ N + 1: ${data.total_npone || 0}
                     }
                 }
                 
-                // Показываем успешное копирование
                 const originalText = button.textContent;
                 button.textContent = '✅ Скопировано!';
                 button.classList.add('copied');
@@ -487,13 +819,10 @@ N + 1: ${data.total_npone || 0}
             } catch (err) {
                 console.error('Ошибка копирования: ', err);
                 
-                // Последний fallback - показываем текст в prompt
                 const userAgent = navigator.userAgent.toLowerCase();
                 if (userAgent.includes('mobile') || userAgent.includes('android') || userAgent.includes('iphone')) {
-                    // На мобильных устройствах показываем alert с текстом
                     alert('Скопируйте текст:\n\n' + text);
                 } else {
-                    // На десктопе показываем prompt
                     prompt('Нажмите Ctrl+C для копирования:', text);
                 }
             }
@@ -507,9 +836,14 @@ N + 1: ${data.total_npone || 0}
                 return;
             }
     
-            const tableRows = stats.map(stat => `
+            const tableRows = stats.map((stat, index) => `
                 <tr>
-                    <td>${stat.name || 'Не указано'}</td>
+                    <td>
+                        ${stat.name || 'Не указано'}
+                        <button class="edit-button" onclick="openEditModal(${index})" title="Редактировать">
+                            ✏️
+                        </button>
+                    </td>
                     <td class="seed-col">${(stat.seed_plan || 0).toFixed(1)}</td>
                     <td class="seed-col">${(stat.seed_fact || 0).toFixed(1)}</td>
                     <td class="seed-col ${(stat.seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
@@ -536,8 +870,6 @@ N + 1: ${data.total_npone || 0}
                     <td>${stat.news || 0}</td>
                 </tr>
             `).join('');
-
-            console.log(stats)
     
             container.innerHTML = `
                 <div class="stats-table-container">
@@ -577,12 +909,137 @@ N + 1: ${data.total_npone || 0}
                     </table>
                 </div>
             `;
+
+            window.statsData = stats;
         }
-    
-        // Загружаем данные при загрузке страницы
+
+        function openEditModal(index) {
+            const stat = window.statsData[index];
+            if (!stat) return;
+
+            currentEditingData = { ...stat, index };
+
+            document.getElementById('seed_plan').value = stat.seed_plan || 0;
+            document.getElementById('seed_fact').value = stat.seed_fact || 0;
+            document.getElementById('pumpkin_plan').value = stat.pumpkin_plan || 0;
+            document.getElementById('pumpkin_fact').value = stat.pumpkin_fact || 0;
+            document.getElementById('peanut_plan').value = stat.peanut_plan || 0;
+            document.getElementById('peanut_fact').value = stat.peanut_fact || 0;
+            document.getElementById('akb1').value = stat.akb1 || 0;
+            document.getElementById('akb2').value = stat.akb2 || 0;
+            document.getElementById('newtt').value = stat.newtt || 0;
+            document.getElementById('mix').value = stat.mix || 0;
+            document.getElementById('npone').value = stat.npone || 0;
+            document.getElementById('set_shelving').value = stat.set_shelving || 0;
+            document.getElementById('dmp').value = stat.dmp || 0;
+            document.getElementById('top_five').value = stat.top_five || 0;
+            document.getElementById('news').value = stat.news || 0;
+
+            document.querySelector('.modal-title').textContent = `Редактирование данных: ${stat.name || 'Без имени'}`;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditingData = null;
+        }
+
+        async function saveEditedData() {
+            if (!currentEditingData) return;
+        
+            const saveButton = document.getElementById('saveEdit');
+            const originalText = saveButton.textContent;
+            const originalColor = saveButton.style.backgroundColor;
+            
+            saveButton.disabled = true;
+            saveButton.textContent = 'Сохранение...';
+        
+            try {
+                const formData = {
+                    name: currentEditingData.name,
+                    seed_plan: parseFloat(document.getElementById('seed_plan').value) || 0,
+                    seed_fact: parseFloat(document.getElementById('seed_fact').value) || 0,
+                    pumpkin_plan: parseFloat(document.getElementById('pumpkin_plan').value) || 0,
+                    pumpkin_fact: parseFloat(document.getElementById('pumpkin_fact').value) || 0,
+                    peanut_plan: parseFloat(document.getElementById('peanut_plan').value) || 0,
+                    peanut_fact: parseFloat(document.getElementById('peanut_fact').value) || 0,
+                    akb1: parseInt(document.getElementById('akb1').value) || 0,
+                    akb2: parseInt(document.getElementById('akb2').value) || 0,
+                    newtt: parseInt(document.getElementById('newtt').value) || 0,
+                    mix: parseInt(document.getElementById('mix').value) || 0,
+                    npone: parseInt(document.getElementById('npone').value) || 0,
+                    set_shelving: parseInt(document.getElementById('set_shelving').value) || 0,
+                    dmp: parseInt(document.getElementById('dmp').value) || 0,
+                    top_five: parseInt(document.getElementById('top_five').value) || 0,
+                    news: parseInt(document.getElementById('news').value) || 0
+                };
+        
+                const response = await fetch(`${API_BASE_URL}/stat`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+        
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorMessage;
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        errorMessage = errorData.error || errorData.message || 'Unknown error';
+                    } catch {
+                        errorMessage = errorText || `HTTP error! status: ${response.status}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+        
+                saveButton.textContent = '✅ Сохранено!';
+                saveButton.style.backgroundColor = '#28a745';
+        
+                await Promise.all([loadStats(), loadTotalStats()]);
+        
+                setTimeout(() => {
+                    closeEditModal();
+                }, 1000);
+        
+            } catch (error) {
+                console.error('Ошибка при сохранении данных:', error);
+                
+                saveButton.textContent = '❌ Ошибка';
+                saveButton.style.backgroundColor = '#dc3545';
+                
+                alert(`Ошибка при сохранении данных: ${error.message}`);
+                
+                setTimeout(() => {
+                    saveButton.disabled = false;
+                    saveButton.textContent = originalText;
+                    saveButton.style.backgroundColor = originalColor || '#007bff';
+                }, 3000);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             loadTotalStats();
             loadStats();
+
+            document.querySelector('.close').onclick = closeEditModal;
+            document.getElementById('cancelEdit').onclick = closeEditModal;
+            document.getElementById('saveEdit').onclick = saveEditedData;
+
+            window.onclick = function(event) {
+                const modal = document.getElementById('editModal');
+                if (event.target === modal) {
+                    closeEditModal();
+                }
+            };
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeEditModal();
+                }
+            });
         });
     </script>
 </body>

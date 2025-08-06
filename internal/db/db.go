@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Wladim1r/statcounter/internal/auth"
 	"github.com/Wladim1r/statcounter/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -36,7 +37,7 @@ func InitDB() (*gorm.DB, error) {
 		return nil, fmt.Errorf("could not connect to DB %w", err)
 	}
 
-	if err := db.AutoMigrate(&models.Stat{}); err != nil {
+	if err := db.AutoMigrate(&models.StatDaily{}, &auth.Region{}); err != nil {
 		return nil, fmt.Errorf("error when creation DB %w", err)
 	}
 

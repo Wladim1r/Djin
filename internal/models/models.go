@@ -1,8 +1,11 @@
 package models
 
-type Stat struct {
+type StatDaily struct {
 	ID   uint   `json:"id,omitempty" gorm:"primarykey"`
-	Name string `json:"name"         gorm:"unique"`
+	Date string `json:"date"         gorm:"type:date;not null;index"`
+
+	Name     string `json:"name"      gorm:"uniqueIndex:idx_region_name"`
+	RegionID uint   `json:"region_id" gorm:"not null;uniqueIndex:idx_region_name"`
 
 	SeedPlan float64 `json:"seed_plan"`
 	SeedFact float64 `json:"seed_fact"`
@@ -29,8 +32,4 @@ type Stat struct {
 
 type ErrorResponse struct {
 	Error string `json:"error" example:"error description"`
-}
-
-type Password struct {
-	Password string `json:"password"`
 }

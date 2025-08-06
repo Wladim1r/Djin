@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}} - {{.region_name}}</title>
+    <link rel="icon" href="./images/djin_logo.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .region-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .smart-logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .smart-logo {
+            height: 120px;
+            width: auto;
+        }
+
+        .welcome-text {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .welcome-text h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .welcome-text p {
+            color: #666;
+            margin: 10px 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .djin-logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .djin-logo {
+            height: 80px;
+            width: auto;
+        }
+
+        .main-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+            min-height: 400px;
+        }
+
+        .top-buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .bottom-button {
+            margin-top: auto;
+            margin-bottom: 40px;
+        }
+
+        .action-button {
+            padding: 20px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-width: 280px;
+        }
+
+        .fill-data-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .fill-data-btn:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .view-data-btn {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .view-data-btn:hover {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .month-stat-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .month-stat-btn:hover {
+            background: linear-gradient(135deg, #F57C00, #E65100);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .test-button {
+            background: linear-gradient(135deg, #607D8B, #455A64);
+            color: white;
+            min-width: 300px;
+        }
+
+        .test-button:hover {
+            background: linear-gradient(135deg, #455A64, #37474F);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .user-info {
+                justify-content: center;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .smart-logo {
+                height: 100px;
+            }
+
+            .djin-logo {
+                height: 70px;
+            }
+
+            .welcome-text {
+                max-width: 400px;
+            }
+
+            .action-button {
+                min-width: 260px;
+                max-width: 300px;
+            }
+
+            .test-button {
+                min-width: 280px;
+            }
+
+            .main-content {
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .region-badge, .logout-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .smart-logo {
+                height: 80px;
+            }
+
+            .djin-logo {
+                height: 60px;
+            }
+
+            .smart-logo-container, .djin-logo-container {
+                margin-bottom: 20px;
+            }
+
+            .welcome-text {
+                max-width: 320px;
+                padding: 25px 20px;
+                margin-bottom: 25px;
+            }
+
+            .welcome-text h3 {
+                font-size: 1.3em;
+            }
+
+            .welcome-text p {
+                font-size: 15px;
+            }
+
+            .action-button {
+                padding: 15px 20px;
+                font-size: 16px;
+                min-width: 240px;
+            }
+
+            .test-button {
+                min-width: 260px;
+            }
+
+            .top-buttons {
+                gap: 15px;
+            }
+
+            .main-content {
+                min-height: 300px;
+            }
+
+            .bottom-button {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .welcome-text {
+                max-width: 300px;
+                padding: 20px 15px;
+            }
+
+            .action-button {
+                min-width: 220px;
+                font-size: 15px;
+            }
+
+            .test-button {
+                min-width: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>{{.title}}</h1>
+            <div class="user-info">
+                <div class="region-badge">{{.region_name}}</div>
+                <button class="logout-btn" onclick="logout()">Выйти</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="smart-logo-container">
+            <img src="./images/smart_logo.png" alt="Smart логотип" class="smart-logo">
+        </div>
+
+        <div class="welcome-text">
+            <h3>Добро пожаловать в систему!</h3>
+            <p>Ваш текущий регион: <strong>{{.region_name}}</strong></p>
+        </div>
+
+        <div class="djin-logo-container">
+            <img src="./images/djin_logo.png" alt="Логотип компании" class="djin-logo">
+        </div>
+
+        <div class="main-content">
+            <div class="top-buttons">
+                <a href="/inputStat.html" class="action-button fill-data-btn">
+                    📝 Заполнить данные
+                </a>
+                <a href="/viewStats.html" class="action-button view-data-btn">
+                    📊 Посмотреть данные
+                </a>
+                <a href="/monthStat.html" class="action-button month-stat-btn">
+                    📅 Статистика за месяц
+                </a>
+            </div>
+
+            <div class="bottom-button">
+                <a href="http://opsz.biz:88/login/" class="action-button test-button" target="_blank">
+                    🧠 Пройти тестирование
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                try {
+                    const response = await fetch('/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    if (response.ok) {
+                        window.location.href = '/login';
+                    }
+                } catch (error) {
+                    alert('Ошибка при выходе из системы');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

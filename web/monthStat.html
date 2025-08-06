@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исторические данные</title>
+    <link rel="icon" href="./images/djin_logo.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            padding: 6px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            font-size: 13px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .header-title {
+            text-align: center;
+            width: 100%;
+        }
+
+        .header-title h4 {
+            margin: 0;
+            font-size: 1.3em;
+            padding: 0 60px;
+        }
+
+        .logo {
+            height: 50px;
+            width: auto;
+            position: absolute;
+            right: 0;
+        }
+
+        /* Панель управления датами */
+        .date-control-panel {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .date-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .date-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-input-group label {
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .date-input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .load-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .load-button:hover {
+            background-color: #45a049;
+        }
+
+        .load-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .quick-dates {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .quick-date-btn {
+            padding: 6px 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-date-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .quick-date-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        /* Информационная панель */
+        .info-panel {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Общая статистика в табличном стиле */
+        .total-stats-container {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .total-stats-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-stats-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .copy-button {
+            padding: 6px 12px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .copy-button:hover {
+            background-color: #1976D2;
+        }
+
+        .copy-button.copied {
+            background-color: #28a745;
+        }
+
+        .total-stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .total-stats-table th,
+        .total-stats-table td {
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .total-stats-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .total-stats-table .category-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .total-stats-table .seed-col {
+            background-color: rgba(255, 140, 0, 0.12);
+        }
+
+        .total-stats-table .pumpkin-col {
+            background-color: rgba(34, 139, 34, 0.12);
+        }
+
+        .total-stats-table .peanut-col {
+            background-color: rgba(178, 34, 34, 0.12);
+        }
+
+        .total-stats-table .metrics-col {
+            background-color: rgba(108, 117, 125, 0.12);
+        }
+
+        .positive {
+            color: #28a745;
+        }
+
+        .negative {
+            color: #dc3545;
+        }
+
+        /* Таблица для индивидуальной статистики */
+        .stats-table-container {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .stats-table-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .stats-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .stats-table td:first-child {
+            text-align: left;
+            font-weight: bold;
+            background-color: #f8f9fa;
+            min-width: 120px;
+        }
+
+        .stats-table .product-header {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .stats-table .seed-col {
+            background-color: rgba(255, 140, 0, 0.12);
+        }
+
+        .stats-table .pumpkin-col {
+            background-color: rgba(34, 139, 34, 0.12);
+        }
+
+        .stats-table .peanut-col {
+            background-color: rgba(178, 34, 34, 0.12);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            font-size: 16px;
+            color: #666;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        /* Адаптивные стили */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header-title h4 {
+                font-size: 1.1em;
+                padding: 0 50px;
+            }
+            
+            .logo {
+                height: 40px;
+            }
+
+            .date-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .date-input-group {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .quick-dates {
+                gap: 6px;
+            }
+
+            .quick-date-btn {
+                padding: 8px;
+                font-size: 11px;
+            }
+            
+            .total-stats-table,
+            .stats-table {
+                font-size: 10px;
+            }
+            
+            .total-stats-table th,
+            .total-stats-table td,
+            .stats-table th,
+            .stats-table td {
+                padding: 6px 4px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .header-title h4 {
+                font-size: 1em;
+                padding: 0 40px;
+            }
+            
+            .logo {
+                height: 35px;
+            }
+            
+            .back-button {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+            
+            .stats-table td:first-child {
+                min-width: 100px;
+                max-width: 100px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <a href="/dashboard" class="back-button">← Назад</a>
+        <div class="header-title">
+            <h4>Исторические данные</h4>
+        </div>
+        <img src="./images/djin_logo.png" alt="Логотип компании" class="logo">
+    </div>
+
+    <div class="date-control-panel">
+        <div class="date-controls">
+            <div class="date-input-group">
+                <label for="selectedDate">📅 Дата:</label>
+                <input type="date" id="selectedDate" class="date-input">
+            </div>
+            <button class="load-button" onclick="loadDataForDate()">
+                <span id="loadButtonText">📊 Загрузить</span>
+            </button>
+        </div>
+        
+        <div class="quick-dates">
+            <button class="quick-date-btn" onclick="selectQuickDate(0)">Сегодня</button>
+            <button class="quick-date-btn" onclick="selectQuickDate(1)">Вчера</button>
+            <button class="quick-date-btn" onclick="selectQuickDate(3)">3 дня назад</button>
+            <button class="quick-date-btn" onclick="selectQuickDate(7)">Неделя назад</button>
+            <button class="quick-date-btn" onclick="selectQuickDate(14)">2 недели назад</button>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h5>📋 Доступны данные за последние 30 дней</h5>
+        <p>Система автоматически удаляет данные старше 30 дней каждый день в полночь</p>
+    </div>
+
+    <div id="selectedDateInfo" style="display: none;"></div>
+    <div id="loadingTotal" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        Загрузка общей статистики...
+    </div>
+    <div id="totalStatsContainer"></div>
+
+    <div id="loadingStats" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        Загрузка отчетов...
+    </div>
+    <div id="statsContainer"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/djin';
+        let currentSelectedDate = null;
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDatePicker();
+        });
+
+        function initializeDatePicker() {
+            const dateInput = document.getElementById('selectedDate');
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+            
+            // Устанавливаем сегодняшнюю дату по умолчанию
+            dateInput.value = formatDateForInput(today);
+            dateInput.max = formatDateForInput(today);
+            dateInput.min = formatDateForInput(thirtyDaysAgo);
+            
+            // Автоматически загружаем данные за сегодня
+            currentSelectedDate = formatDateForAPI(today);
+            updateSelectedDateInfo(today);
+            loadDataForDate();
+        }
+
+        function formatDateForInput(date) {
+            return date.getFullYear() + '-' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(date.getDate()).padStart(2, '0');
+        }
+
+        function formatDateForAPI(date) {
+            return date.getFullYear() + '-' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(date.getDate()).padStart(2, '0');
+        }
+
+        function formatDateForDisplay(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            return date.toLocaleDateString('ru-RU', options);
+        }
+
+        function selectQuickDate(daysAgo) {
+            const date = new Date();
+            date.setDate(date.getDate() - daysAgo);
+            
+            document.getElementById('selectedDate').value = formatDateForInput(date);
+            currentSelectedDate = formatDateForAPI(date);
+            updateSelectedDateInfo(date);
+            
+            // Визуальная обратная связь для кнопок
+            document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            loadDataForDate();
+        }
+
+        function updateSelectedDateInfo(date) {
+            const infoDiv = document.getElementById('selectedDateInfo');
+            const isToday = formatDateForAPI(date) === formatDateForAPI(new Date());
+            const daysDiff = Math.ceil((new Date() - date) / (1000 * 60 * 60 * 24));
+            
+            let dateDescription = '';
+            if (isToday) {
+                dateDescription = 'Сегодня';
+            } else if (daysDiff === 1) {
+                dateDescription = 'Вчера';
+            } else {
+                dateDescription = `${daysDiff} дн. назад`;
+            }
+            
+            infoDiv.innerHTML = `
+                <div class="info-panel">
+                    <h5>${dateDescription} - ${formatDateForDisplay(date)}</h5>
+                </div>
+            `;
+            infoDiv.style.display = 'block';
+        }
+
+        function loadDataForDate() {
+            const dateInput = document.getElementById('selectedDate');
+            const selectedDate = dateInput.value;
+            
+            if (!selectedDate) {
+                alert('Пожалуйста, выберите дату');
+                return;
+            }
+            
+            currentSelectedDate = selectedDate;
+            const date = new Date(selectedDate + 'T00:00:00');
+            updateSelectedDateInfo(date);
+            
+            // Очищаем предыдущие данные
+            document.getElementById('totalStatsContainer').innerHTML = '';
+            document.getElementById('statsContainer').innerHTML = '';
+            
+            // Показываем индикаторы загрузки
+            document.getElementById('loadingTotal').style.display = 'block';
+            document.getElementById('loadingStats').style.display = 'block';
+            
+            // Блокируем кнопку загрузки
+            const loadButton = document.querySelector('.load-button');
+            const buttonText = document.getElementById('loadButtonText');
+            loadButton.disabled = true;
+            buttonText.innerHTML = '<div class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px; margin-right: 8px;"></div>Загрузка...';
+            
+            // Загружаем данные
+            Promise.all([
+                loadTotalStatsForDate(selectedDate),
+                loadStatsForDate(selectedDate)
+            ]).finally(() => {
+                // Разблокируем кнопку
+                loadButton.disabled = false;
+                buttonText.textContent = '📊 Загрузить';
+            });
+        }
+
+        async function loadTotalStatsForDate(date) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/total?date=${date}`);
+                if (response.status === 404) {
+                    throw new Error('Нет данных за выбранную дату');
+                }
+                if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+                
+                const data = await response.json();
+                displayTotalStats(data, date);
+            } catch (error) {
+                console.error('Ошибка при загрузке общей статистики:', error);
+                document.getElementById('totalStatsContainer').innerHTML = 
+                    `<div class="no-data">❌ ${error.message}</div>`;
+            } finally {
+                document.getElementById('loadingTotal').style.display = 'none';
+            }
+        }
+
+        async function loadStatsForDate(date) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/month?date=${date}`);
+                if (response.status === 404) {
+                    throw new Error('Нет данных за выбранную дату');
+                }
+                if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+                
+                const stats = await response.json();
+                
+                // Добавляем вычисление разниц, если их нет от сервера
+                const statsWithDiff = stats.map(stat => ({
+                    ...stat,
+                    seed_dif: (stat.seed_fact || 0) - (stat.seed_plan || 0),
+                    pumpkin_dif: (stat.pumpkin_fact || 0) - (stat.pumpkin_plan || 0),
+                    peanut_dif: (stat.peanut_fact || 0) - (stat.peanut_plan || 0)
+                }));
+                
+                displayStats(statsWithDiff, date);
+            } catch (error) {
+                console.error('Ошибка при загрузке статистики:', error);
+                document.getElementById('statsContainer').innerHTML = 
+                    `<div class="no-data">❌ ${error.message}</div>`;
+            } finally {
+                document.getElementById('loadingStats').style.display = 'none';
+            }
+        }
+
+        function displayTotalStats(data, date) {
+            const container = document.getElementById('totalStatsContainer');
+            const displayDate = new Date(date + 'T00:00:00');
+            
+            container.innerHTML = `
+                <div class="total-stats-container">
+                    <div class="total-stats-header">
+                        <div class="total-stats-title">📊 Общая статистика за ${formatDateForDisplay(displayDate)} (Отчетов: ${data.total_reports || 0})</div>
+                        <button class="copy-button" onclick="copyTotalStats('${date}')">📋 Копировать</button>
+                    </div>
+                    
+                    <table class="total-stats-table">
+                        <thead>
+                            <tr>
+                                <th colspan="3" class="product-header seed-col">🌻 Семечка</th>
+                                <th colspan="3" class="product-header pumpkin-col">🎃 Тыква</th>
+                                <th colspan="3" class="product-header peanut-col">🥜 Арахис</th>
+                                <th rowspan="2">АКБ1</th>
+                                <th rowspan="2">АКБ2</th>
+                                <th rowspan="2">Новые ТТ</th>
+                                <th rowspan="2">Микс</th>
+                                <th rowspan="2">N+1</th>
+                                <th rowspan="2">Уст. стеллажа</th>
+                                <th rowspan="2">ДМП</th>
+                                <th rowspan="2">Топ 5</th>
+                                <th rowspan="2">Новинки</th>
+                            </tr>
+                            <tr>
+                                <th class="seed-col">План</th>
+                                <th class="seed-col">Факт</th>
+                                <th class="seed-col">Разн.</th>
+                                <th class="pumpkin-col">План</th>
+                                <th class="pumpkin-col">Факт</th>
+                                <th class="pumpkin-col">Разн.</th>
+                                <th class="peanut-col">План</th>
+                                <th class="peanut-col">Факт</th>
+                                <th class="peanut-col">Разн.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="seed-col">${(data.total_seed_plan || 0).toFixed(1)}</td>
+                                <td class="seed-col">${(data.total_seed_fact || 0).toFixed(1)}</td>
+                                <td class="seed-col ${(data.total_seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
+                                </td>
+                                <td class="pumpkin-col">${(data.total_pumpkin_plan || 0).toFixed(1)}</td>
+                                <td class="pumpkin-col">${(data.total_pumpkin_fact || 0).toFixed(1)}</td>
+                                <td class="pumpkin-col ${(data.total_pumpkin_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
+                                </td>
+                                <td class="peanut-col">${(data.total_peanut_plan || 0).toFixed(1)}</td>
+                                <td class="peanut-col">${(data.total_peanut_fact || 0).toFixed(1)}</td>
+                                <td class="peanut-col ${(data.total_peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
+                                </td>
+                                <td>${data.total_akb1 || 0}</td>
+                                <td>${data.total_akb2 || 0}</td>
+                                <td>${data.total_newtt || 0}</td>
+                                <td>${data.total_mix || 0}</td>
+                                <td>${data.total_npone || 0}</td>
+                                <td>${data.total_set_shelving || 0}</td>
+                                <td>${data.total_dmp || 0}</td>
+                                <td>${data.total_top_five || 0}</td>
+                                <td>${data.total_news || 0}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Сохраняем данные для копирования
+            window.totalStatsData = { ...data, selectedDate: date };
+        }
+
+        async function copyTotalStats(date) {
+            if (!window.totalStatsData) {
+                alert('Данные для копирования не найдены');
+                return;
+            }
+            
+            const data = window.totalStatsData;
+            const displayDate = new Date(date + 'T00:00:00');
+            const totalAkb = (data.total_akb1 || 0) + (data.total_akb2 || 0);
+            const text = `ОБЩАЯ СТАТИСТИКА за ${formatDateForDisplay(displayDate)} (Отчетов: ${data.total_reports || 0})
+
+🌻 СЕМЕЧКА:
+${(data.total_seed_plan || 0).toFixed(1)}/${(data.total_seed_fact || 0).toFixed(1)}/${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
+
+🎃 ТЫКВА:
+${(data.total_pumpkin_plan || 0).toFixed(1)}/${(data.total_pumpkin_fact || 0).toFixed(1)}/${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
+
+🥜 АРАХИС:
+${(data.total_peanut_plan || 0).toFixed(1)}/${(data.total_peanut_fact || 0).toFixed(1)}/${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
+
+ДОПОЛНИТЕЛЬНЫЕ ПОКАЗАТЕЛИ:
+АКБ: ${totalAkb}
+Новые ТТ: ${data.total_newtt || 0}
+Микс: ${data.total_mix || 0}
+N + 1: ${data.total_npone || 0}
+Установка стеллажа: ${data.total_set_shelving || 0}
+ДМП: ${data.total_dmp || 0}
+Топ 5: ${data.total_top_five || 0}
+Новинки: ${data.total_news || 0}`;
+
+            const button = document.querySelector('.copy-button');
+            
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (!successful) {
+                        throw new Error('execCommand failed');
+                    }
+                }
+                
+                button.textContent = '✅ Скопировано!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = '📋 Копировать';
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Ошибка копирования:', err);
+                alert('Не удалось скопировать данные в буфер обмена');
+            }
+        }
+
+        function displayStats(stats, date) {
+            const container = document.getElementById('statsContainer');
+            const displayDate = new Date(date + 'T00:00:00');
+            
+            if (!stats || stats.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        📊 Нет данных за ${formatDateForDisplay(displayDate)}
+                    </div>
+                `;
+                return;
+            }
+            
+            let tableRows = '';
+            
+            stats.forEach(stat => {
+                const seedDif = stat.seed_dif || 0;
+                const pumpkinDif = stat.pumpkin_dif || 0;
+                const peanutDif = stat.peanut_dif || 0;
+                
+                tableRows += `
+                    <tr>
+                        <td>${stat.name || 'Без названия'}</td>
+                        <td class="seed-col">${(stat.seed_plan || 0).toFixed(1)}</td>
+                        <td class="seed-col">${(stat.seed_fact || 0).toFixed(1)}</td>
+                        <td class="seed-col ${seedDif >= 0 ? 'positive' : 'negative'}">
+                            ${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(1)}
+                        </td>
+                        <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(1)}</td>
+                        <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(1)}</td>
+                        <td class="pumpkin-col ${pumpkinDif >= 0 ? 'positive' : 'negative'}">
+                            ${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(1)}
+                        </td>
+                        <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(1)}</td>
+                        <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(1)}</td>
+                        <td class="peanut-col ${peanutDif >= 0 ? 'positive' : 'negative'}">
+                            ${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(1)}
+                        </td>
+                        <td>${stat.akb1 || 0}</td>
+                        <td>${stat.akb2 || 0}</td>
+                        <td>${stat.newtt || 0}</td>
+                        <td>${stat.mix || 0}</td>
+                        <td>${stat.npone || 0}</td>
+                        <td>${stat.set_shelving || 0}</td>
+                        <td>${stat.dmp || 0}</td>
+                        <td>${stat.top_five || 0}</td>
+                        <td>${stat.news || 0}</td>
+                    </tr>
+                `;
+            });
+            
+            container.innerHTML = `
+                <div class="stats-table-container">
+                    <div class="stats-table-title">
+                        📋 Детальные отчеты за ${formatDateForDisplay(displayDate)} (${stats.length} отчетов)
+                    </div>
+                    
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Торговая точка</th>
+                                <th colspan="3" class="product-header seed-col">🌻 Семечка</th>
+                                <th colspan="3" class="product-header pumpkin-col">🎃 Тыква</th>
+                                <th colspan="3" class="product-header peanut-col">🥜 Арахис</th>
+                                <th rowspan="2">АКБ1</th>
+                                <th rowspan="2">АКБ2</th>
+                                <th rowspan="2">Новые ТТ</th>
+                                <th rowspan="2">Микс</th>
+                                <th rowspan="2">N+1</th>
+                                <th rowspan="2">Уст. стеллажа</th>
+                                <th rowspan="2">ДМП</th>
+                                <th rowspan="2">Топ 5</th>
+                                <th rowspan="2">Новинки</th>
+                            </tr>
+                            <tr>
+                                <th class="seed-col">План</th>
+                                <th class="seed-col">Факт</th>
+                                <th class="seed-col">Разн.</th>
+                                <th class="pumpkin-col">План</th>
+                                <th class="pumpkin-col">Факт</th>
+                                <th class="pumpkin-col">Разн.</th>
+                                <th class="peanut-col">План</th>
+                                <th class="peanut-col">Факт</th>
+                                <th class="peanut-col">Разн.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

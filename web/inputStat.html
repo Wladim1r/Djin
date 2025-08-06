@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ввод статистики</title>
+    <link rel="icon" href="./images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -375,7 +376,7 @@
 </head>
 <body>
     <div class="header-container">
-        <a href="index.html" class="back-button">← Назад</a>
+        <a href="/dashboard" class="back-button">← Назад</a>
         <div class="header-title">
             <h4>Ввод данных</h4>
         </div>
@@ -540,7 +541,7 @@
                     setTimeout(() => {
                         this.reset();
                         hideMessage();
-                    }, 2000);
+                    }, 1000);
                 } else {
                     const errorText = await response.text();
                     
