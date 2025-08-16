@@ -13,7 +13,9 @@ type DjnService interface {
 	PostStat(stat models.StatDaily) error
 	PatchStat(regionID uint, stat models.StatDaily) error
 	GetStatByRegion(regionID uint) ([]models.StatDaily, error)
+	GetStatByRegionAndUser(regionID uint, username string) ([]models.StatDaily, error)
 	GetStatsByMonth(regionID uint, date string) ([]models.StatDaily, error)
+	GetStatsByMonthAndUser(regionID uint, username string, date string) ([]models.StatDaily, error)
 }
 
 type djnService struct {
@@ -76,4 +78,19 @@ func (s *djnService) PostStat(stat models.StatDaily) error {
 
 func (s *djnService) GetStatByRegion(regionID uint) ([]models.StatDaily, error) {
 	return s.repo.GetStatsByRegion(regionID)
+}
+
+func (s *djnService) GetStatByRegionAndUser(
+	regionID uint,
+	username string,
+) ([]models.StatDaily, error) {
+	return s.repo.GetStatsByRegionAndUser(regionID, username)
+}
+
+func (s *djnService) GetStatsByMonthAndUser(
+	regionID uint,
+	username string,
+	date string,
+) ([]models.StatDaily, error) {
+	return s.repo.GetStatsByMonthAndUser(regionID, username, date)
 }

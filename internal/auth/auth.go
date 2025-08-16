@@ -10,20 +10,29 @@ import (
 )
 
 type Region struct {
-	ID       uint   `json:"id"    gorm:"primarykey"`
-	Name     string `json:"name"  gorm:"not null;unique"`
-	Login    string `json:"login" gorm:"not null;unique"`
-	Password string `json:"-"     gorm:"not null"`
+	ID    uint   `json:"id"              gorm:"primarykey"`
+	Name  string `json:"name"            gorm:"not null;unique"`
+	Users []User `json:"users,omitempty" gorm:"foreignKey:RegionID"`
+}
+
+type User struct {
+	ID       uint   `json:"id"               gorm:"primarykey"`
+	Username string `json:"username"         gorm:"not null;unique"`
+	Password string `json:"-"                gorm:"not null"`
+	RegionID uint   `json:"region_id"        gorm:"not null"`
+	Region   Region `json:"region,omitempty" gorm:"foreignKey:RegionID"`
 }
 
 type LoginRequest struct {
-	Login    string `json:"login"    binding:"required"`
+	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
 type LoginResponse struct {
 	Success    bool   `json:"success"`
 	Message    string `json:"message"`
+	UserID     uint   `json:"user_id,omitempty"`
+	Username   string `json:"username,omitempty"`
 	RegionID   uint   `json:"region_id,omitempty"`
 	RegionName string `json:"region_name,omitempty"`
 }
@@ -47,41 +56,40 @@ func (s *AuthService) CheckPassword(password, hash string) bool {
 	return err == nil
 }
 
-func (s *AuthService) Authenticate(login, password string) (*Region, error) {
-	var region Region
-
-	err := s.db.Where("login = ?", login).First(&region).Error
+func (s *AuthService) Authenticate(username, password string) (*User, error) {
+	var user User
+	err := s.db.Preload("Region").Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.CheckPassword(password, region.Password) {
+	if !s.CheckPassword(password, user.Password) {
 		return nil, gorm.ErrRecordNotFound
 	}
 
-	return &region, nil
+	return &user, nil
 }
 
-func (s *AuthService) CreateRegion(name, login, password string) (*Region, error) {
+func (s *AuthService) CreateUser(username, password string, regionID uint) (*User, error) {
 	hashedPassword, err := s.HashPassword(password)
 	if err != nil {
 		return nil, err
 	}
 
-	region := Region{
-		Name:     name,
-		Login:    login,
+	user := User{
+		Username: username,
 		Password: hashedPassword,
+		RegionID: regionID,
 	}
 
-	err = s.db.Create(&region).Error
-	return &region, err
+	err = s.db.Create(&user).Error
+	return &user, err
 }
 
-func (s *AuthService) GetRegionByID(id uint) (*Region, error) {
-	var region Region
-	err := s.db.First(&region, id).Error
-	return &region, err
+func (s *AuthService) GetUserByID(id uint) (*User, error) {
+	var user User
+	err := s.db.Preload("Region").First(&user, id).Error
+	return &user, err
 }
 
 // Контроллер авторизации
@@ -94,7 +102,7 @@ func NewAuthController(authService *AuthService) *AuthController {
 }
 
 func (ac *AuthController) ShowLoginForm(c *gin.Context) {
-	if regionID := sessions.Default(c).Get("region_id"); regionID != nil {
+	if userID := sessions.Default(c).Get("user_id"); userID != nil {
 		c.Redirect(http.StatusSeeOther, "/dashboard")
 		return
 	}
@@ -115,26 +123,29 @@ func (ac *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	region, err := ac.authService.Authenticate(req.Login, req.Password)
+	user, err := ac.authService.Authenticate(req.Username, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, LoginResponse{
 			Success: false,
-			Message: "Неверный логин или пароль",
+			Message: "Неверное имя пользователя или пароль",
 		})
 		return
 	}
 
 	session := sessions.Default(c)
-	session.Set("region_id", region.ID)
-	session.Set("region_name", region.Name)
-	session.Set("region_login", region.Login)
+	session.Set("user_id", user.ID)
+	session.Set("username", user.Username)
+	session.Set("region_id", user.RegionID)
+	session.Set("region_name", user.Region.Name)
 	session.Save()
 
 	c.JSON(http.StatusOK, LoginResponse{
 		Success:    true,
 		Message:    "Успешный вход",
-		RegionID:   region.ID,
-		RegionName: region.Name,
+		UserID:     user.ID,
+		Username:   user.Username,
+		RegionID:   user.RegionID,
+		RegionName: user.Region.Name,
 	})
 }
 
@@ -151,11 +162,12 @@ func (ac *AuthController) Logout(c *gin.Context) {
 
 func (ac *AuthController) GetCurrentUser(c *gin.Context) {
 	session := sessions.Default(c)
+	userID := session.Get("user_id")
+	username := session.Get("username")
 	regionID := session.Get("region_id")
 	regionName := session.Get("region_name")
-	regionLogin := session.Get("region_login")
 
-	if regionID == nil {
+	if userID == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
 			"message": "Не авторизован",
@@ -164,10 +176,11 @@ func (ac *AuthController) GetCurrentUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"success":      true,
-		"region_id":    regionID,
-		"region_name":  regionName,
-		"region_login": regionLogin,
+		"success":     true,
+		"user_id":     userID,
+		"username":    username,
+		"region_id":   regionID,
+		"region_name": regionName,
 	})
 }
 
@@ -175,9 +188,9 @@ func (ac *AuthController) GetCurrentUser(c *gin.Context) {
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		regionID := session.Get("region_id")
+		userID := session.Get("user_id")
 
-		if regionID == nil {
+		if userID == nil {
 			// Для AJAX запросов возвращаем JSON
 			if c.GetHeader("Content-Type") == "application/json" ||
 				c.GetHeader("Accept") == "application/json" {
@@ -195,10 +208,11 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Добавляем информацию о регионе в контекст
-		c.Set("region_id", regionID)
+		// Добавляем информацию о пользователе в контекст
+		c.Set("user_id", userID)
+		c.Set("username", session.Get("username"))
+		c.Set("region_id", session.Get("region_id"))
 		c.Set("region_name", session.Get("region_name"))
-		c.Set("region_login", session.Get("region_login"))
 
 		c.Next()
 	}
@@ -237,26 +251,65 @@ func GetRegionIDFromContext(c *gin.Context) uint {
 	return 0
 }
 
-// Инициализация регионов
+// Хелпер для получения userID из контекста
+func GetUserIDFromContext(c *gin.Context) uint {
+	if userID, exists := c.Get("user_id"); exists {
+		return userID.(uint)
+	}
+	return 0
+}
+
+// Инициализация регионов и пользователей
 func InitializeRegions(db *gorm.DB) error {
 	authService := NewAuthService(db)
 
+	// Создаем регионы
 	regions := []struct {
-		Name     string
-		Login    string
-		Password string
+		Name string
 	}{
-		{"Московская область", "moscow", "moscow123"},
-		{"Санкт-Петербург", "spb", "spb456"},
-		{"Краснодарский край", "krasnodar", "krd789"},
-		{"Республика Татарстан", "kazan", "kazan321"},
+		{"Московская область"},
+		{"Санкт-Петербург"},
+		{"Краснодарский край"},
 	}
+
+	regionMap := make(map[string]uint)
 
 	for _, r := range regions {
 		var existing Region
-		if err := db.Where("login = ?", r.Login).First(&existing).Error; err != nil {
+		if err := db.Where("name = ?", r.Name).First(&existing).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
-				_, err := authService.CreateRegion(r.Name, r.Login, r.Password)
+				region := Region{Name: r.Name}
+				if err := db.Create(&region).Error; err != nil {
+					return err
+				}
+				regionMap[r.Name] = region.ID
+			}
+		} else {
+			regionMap[r.Name] = existing.ID
+		}
+	}
+
+	// Создаем тестовых пользователей
+	users := []struct {
+		Username   string
+		Password   string
+		RegionName string
+	}{
+		{"ivan", "123", "Московская область"},
+		{"ivan", "1234", "Санкт-Петербург"},
+		{"anna", "123", "Санкт-Петербург"},
+		{"elena", "123", "Санкт-Петербург"},
+		// Дополнительные пользователи для демонстрации
+		{"admin_msk", "123", "Московская область"},
+		{"man", "123", "Санкт-Петербург"},
+	}
+
+	for _, u := range users {
+		var existing User
+		if err := db.Where("username = ?", u.Username).First(&existing).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				regionID := regionMap[u.RegionName]
+				_, err := authService.CreateUser(u.Username, u.Password, regionID)
 				if err != nil {
 					return err
 				}
@@ -265,4 +318,28 @@ func InitializeRegions(db *gorm.DB) error {
 	}
 
 	return nil
+}
+
+func (ac *AuthController) GetMe(c *gin.Context) {
+	session := sessions.Default(c)
+	userID := session.Get("user_id")
+	username := session.Get("username")
+	regionID := session.Get("region_id")
+	regionName := session.Get("region_name")
+
+	if userID == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": "Не авторизован",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":     true,
+		"user_id":     userID,
+		"username":    username,
+		"region_id":   regionID,
+		"region_name": regionName,
+	})
 }

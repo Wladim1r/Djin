@@ -16,6 +16,7 @@ import (
 	"github.com/Wladim1r/statcounter/internal/auth"
 	"github.com/Wladim1r/statcounter/internal/db"
 	"github.com/Wladim1r/statcounter/internal/lib/logger"
+	"github.com/Wladim1r/statcounter/internal/lib/routes"
 	"github.com/Wladim1r/statcounter/internal/lib/tick"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -30,8 +31,9 @@ func main() {
 		panic(err)
 	}
 
+	// Инициализируем регионы и пользователей
 	if err := auth.InitializeRegions(db); err != nil {
-		log.Printf("Error initialize regions: %v", err)
+		log.Printf("Error initialize regions and users: %v", err)
 	}
 
 	// initialize services
@@ -71,52 +73,7 @@ func main() {
 
 	router.Use(gin.LoggerWithFormatter(logger.Log))
 
-	authRoutes := router.Group("/auth")
-	{
-		authRoutes.GET("/login", authController.ShowLoginForm)
-		authRoutes.POST("/login", authController.Login)
-		authRoutes.POST("/logout", authController.Logout)
-	}
-
-	// public routes
-	router.GET("/login", authController.ShowLoginForm)
-	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusSeeOther, "/dashboard")
-	})
-
-	// protecred routes
-	protected := router.Group("/")
-	protected.Use(auth.AuthMiddleware())
-	protected.Use(auth.RegionContextMiddleware())
-	{
-		protected.GET("/me", authController.GetCurrentUser)
-
-		protected.GET("/dashboard", func(c *gin.Context) {
-			regionName := c.GetString("region_name")
-			c.HTML(http.StatusOK, "index.html", gin.H{
-				"title":       "Панель управления",
-				"region_name": regionName,
-			})
-		})
-
-		// API routes
-		api := protected.Group("/djin")
-		{
-			api.POST("/stat", auth.InjectRegionID(hand.PostStat))
-			api.GET("/stat", auth.InjectRegionID(hand.GetStatByRegion))
-			api.GET("/total", auth.InjectRegionID(hand.GetInfo))
-			api.PATCH("/stat", auth.InjectRegionID(hand.PatchStat))
-			api.GET("/month", auth.InjectRegionID(hand.GetStatByMonth))
-
-			api.GET("/regions-stats", hand.GetAllRegionalStats)
-		}
-
-		// protected static files
-		protected.StaticFile("/inputStat.html", "./web/inputStat.html")
-		protected.StaticFile("/viewStats.html", "./web/viewStats.html")
-		protected.StaticFile("/monthStat.html", "./web/monthStat.html")
-		protected.Static("/images", "./web/images/")
-	}
+	routes.SetupRoutes(router, authController, &hand)
 
 	ctx, stop := signal.NotifyContext(context.Background(),
 		syscall.SIGHUP,

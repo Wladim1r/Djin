@@ -25,16 +25,22 @@ func NewDjnHandler(serv service.DjnService) DjnHandler {
 
 func (h *DjnHandler) GetStatByMonth(c *gin.Context) {
 	regionID := auth.GetRegionIDFromContext(c)
-	if regionID == 0 {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
-			Error: "Region is not defined",
-		})
-		return
-	}
+	username := c.GetString("username")
 
 	date := c.Query("date")
+	userOnly := c.Query("user") == "true"
 
-	stats, err := h.serv.GetStatsByMonth(regionID, date)
+	var (
+		stats []models.StatDaily
+		err   error
+	)
+
+	if userOnly {
+		stats, err = h.serv.GetStatsByMonthAndUser(regionID, username, date)
+	} else {
+		stats, err = h.serv.GetStatsByMonth(regionID, date)
+	}
+
 	if err != nil {
 		switch {
 		case errors.Is(err, errs.ErrNotFound):
@@ -65,10 +71,27 @@ func (h *DjnHandler) PatchStat(c *gin.Context) {
 		return
 	}
 
+	// Получаем username из контекста
+	username := c.GetString("username")
+	if username == "" {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error: "User not authenticated",
+		})
+		return
+	}
+
 	var obj models.StatDaily
 	if err := c.ShouldBindJSON(&obj); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Error: "Invalid Body Request",
+		})
+		return
+	}
+
+	// Проверяем, что пользователь пытается изменить только свои данные
+	if obj.Name != username {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{
+			Error: "You can only edit your own statistics",
 		})
 		return
 	}
@@ -92,6 +115,11 @@ func (h *DjnHandler) PatchStat(c *gin.Context) {
 		}
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Data updated successfully",
+		"status":  "success",
+	})
 }
 
 func (h *DjnHandler) PostStat(c *gin.Context) {
@@ -99,6 +127,15 @@ func (h *DjnHandler) PostStat(c *gin.Context) {
 	if regionID == 0 {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
 			Error: "Region is not defined",
+		})
+		return
+	}
+
+	// Получаем username из контекста
+	username := c.GetString("username")
+	if username == "" {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error: "User not authenticated",
 		})
 		return
 	}
@@ -111,6 +148,8 @@ func (h *DjnHandler) PostStat(c *gin.Context) {
 		return
 	}
 
+	// Автоматически устанавливаем имя пользователя из сессии
+	obj.Name = username
 	obj.RegionID = regionID
 	obj.Date = time.Now().Format("2006-01-02")
 
@@ -118,7 +157,7 @@ func (h *DjnHandler) PostStat(c *gin.Context) {
 		switch {
 		case errors.Is(err, errs.ErrUniqueName):
 			c.JSON(http.StatusConflict, models.ErrorResponse{
-				Error: "Duplicate name",
+				Error: "You have already submitted data for today",
 			})
 		case errors.Is(err, errs.ErrDBOperation):
 			c.JSON(http.StatusInternalServerError, models.ErrorResponse{
@@ -147,9 +186,18 @@ func (h *DjnHandler) GetStatByRegion(c *gin.Context) {
 		return
 	}
 
-	stats, err := h.serv.GetStatByRegion(regionID)
-	if err != nil {
+	// Получаем username из контекста для фильтрации
+	username := c.GetString("username")
+	if username == "" {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error: "User not authenticated",
+		})
+		return
+	}
 
+	// Используем новый метод для получения статистики конкретного пользователя
+	stats, err := h.serv.GetStatByRegionAndUser(regionID, username)
+	if err != nil {
 		switch {
 		case errors.Is(err, errs.ErrNotFound):
 			c.JSON(http.StatusNotFound, models.ErrorResponse{

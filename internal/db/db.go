@@ -1,3 +1,4 @@
+// db/db.go
 package db
 
 import (
@@ -37,7 +38,7 @@ func InitDB() (*gorm.DB, error) {
 		return nil, fmt.Errorf("could not connect to DB %w", err)
 	}
 
-	if err := db.AutoMigrate(&models.StatDaily{}, &auth.Region{}); err != nil {
+	if err := db.AutoMigrate(&auth.Region{}, &auth.User{}, &models.StatDaily{}); err != nil {
 		return nil, fmt.Errorf("error when creation DB %w", err)
 	}
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Просмотр статистики</title>
-    <link rel="icon" href="./images/djin_logo.png" type="image/png">
+    <link rel="icon" href="../images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -524,22 +524,22 @@
     <div class="header-container">
         <a href="/dashboard" class="back-button">← Назад</a>
         <div class="header-title">
-            <h4>Статистика отчетов</h4>
+            <h4>Ваша статистика</h4>
         </div>
-        <img src="./images/djin_logo.png" alt="Логотип компании" class="logo">
+        <img src="../images/djin_logo.png" alt="Логотип компании" class="logo">
     </div>
 
-    <div id="loadingTotal" class="loading">Загрузка общей статистики...</div>
+    <div id="loadingTotal" class="loading">Загрузка общей статистики региона...</div>
     <div id="totalStatsContainer"></div>
 
-    <div id="loadingStats" class="loading">Загрузка отчетов...</div>
+    <div id="loadingStats" class="loading">Загрузка ваших отчетов...</div>
     <div id="statsContainer"></div>
 
     <!-- Модальное окно для редактирования -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Редактирование данных сотрудника</h3>
+                <h3 class="modal-title">Редактирование ваших данных</h3>
                 <span class="close">&times;</span>
             </div>
             <div class="modal-body">
@@ -639,18 +639,80 @@
     <script>
         const API_BASE_URL = 'http://localhost:8080/djin';
         let currentEditingData = null;
+        let currentUser = null;
+
+        // Загрузка информации о текущем пользователе при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCurrentUser();
+            loadTotalStats();
+            loadStats();
+
+            document.querySelector('.close').onclick = closeEditModal;
+            document.getElementById('cancelEdit').onclick = closeEditModal;
+            document.getElementById('saveEdit').onclick = saveEditedData;
+
+            window.onclick = function(event) {
+                const modal = document.getElementById('editModal');
+                if (event.target === modal) {
+                    closeEditModal();
+                }
+            };
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeEditModal();
+                }
+            });
+        });
+
+        async function loadCurrentUser() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const userData = await response.json();
+                    if (userData.success && userData.username) {
+                        currentUser = userData;
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке пользователя:', error);
+            }
+        }
     
         async function loadTotalStats() {
             try {
                 const response = await fetch(`${API_BASE_URL}/total`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const data = await response.json();
                 displayTotalStats(data);
             } catch (error) {
                 console.error('Ошибка при загрузке общей статистики:', error);
-                document.getElementById('totalStatsContainer').innerHTML = 
-                    `<div class="no-data">📊 Данные общей статистики пока недоступны</div>`;
+                // Отображаем таблицу с нулевыми значениями когда данных нет
+                const emptyData = {
+                    total_reports: 0,
+                    total_seed_plan: 0,
+                    total_seed_fact: 0,
+                    total_seed_dif: 0,
+                    total_pumpkin_plan: 0,
+                    total_pumpkin_fact: 0,
+                    total_pumpkin_dif: 0,
+                    total_peanut_plan: 0,
+                    total_peanut_fact: 0,
+                    total_peanut_dif: 0,
+                    total_akb1: 0,
+                    total_akb2: 0,
+                    total_newtt: 0,
+                    total_mix: 0,
+                    total_npone: 0,
+                    total_set_shelving: 0,
+                    total_dmp: 0,
+                    total_top_five: 0,
+                    total_news: 0
+                };
+                displayTotalStats(emptyData);
             } finally {
                 document.getElementById('loadingTotal').style.display = 'none';
             }
@@ -658,8 +720,14 @@
     
         async function loadStats() {
             try {
-                const response = await fetch(`${API_BASE_URL}/stat`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+                const response = await fetch(`${API_BASE_URL}/month?date=${today}`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Вы еще не отправляли отчеты за сегодня');
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const stats = await response.json();
                 
@@ -674,8 +742,8 @@
                 displayStats(statsWithDiff);
             } catch (error) {
                 console.error('Ошибка при загрузке статистики:', error);
-                document.getElementById('statsContainer').innerHTML = 
-                    `<div class="no-data">👥 Данные от торговых представителей пока недоступны</div>`;
+                // Отображаем пустую таблицу вместо сообщения об ошибке
+                displayStats([]);
             } finally {
                 document.getElementById('loadingStats').style.display = 'none';
             }
@@ -687,7 +755,7 @@
             container.innerHTML = `
                 <div class="total-stats-container">
                     <div class="total-stats-header">
-                        <div class="total-stats-title">📊 Общая статистика (Количество отчетов: ${data.total_reports || 0})</div>
+                        <div class="total-stats-title">📊 Общая статистика региона (Количество отчетов: ${data.total_reports || 0})</div>
                         <button class="copy-button" onclick="copyTotalStats()">📋 Копировать</button>
                     </div>
                     
@@ -724,17 +792,17 @@
                                 <td class="seed-col">${(data.total_seed_plan || 0).toFixed(1)}</td>
                                 <td class="seed-col">${(data.total_seed_fact || 0).toFixed(1)}</td>
                                 <td class="seed-col ${(data.total_seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                                    ${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
+                                    ${(data.total_seed_dif || 0).toFixed(1)}
                                 </td>
                                 <td class="pumpkin-col">${(data.total_pumpkin_plan || 0).toFixed(1)}</td>
                                 <td class="pumpkin-col">${(data.total_pumpkin_fact || 0).toFixed(1)}</td>
                                 <td class="pumpkin-col ${(data.total_pumpkin_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                                    ${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
+                                    ${(data.total_pumpkin_dif || 0).toFixed(1)}
                                 </td>
                                 <td class="peanut-col">${(data.total_peanut_plan || 0).toFixed(1)}</td>
                                 <td class="peanut-col">${(data.total_peanut_fact || 0).toFixed(1)}</td>
                                 <td class="peanut-col ${(data.total_peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                                    ${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
+                                    ${(data.total_peanut_dif || 0).toFixed(1)}
                                 </td>
                                 <td>${data.total_akb1 || 0}</td>
                                 <td>${data.total_akb2 || 0}</td>
@@ -763,7 +831,15 @@
             
             const data = window.totalStatsData;
             const totalAkb = (data.total_akb1 || 0) + (data.total_akb2 || 0);
-            const text = `ОБЩАЯ СТАТИСТИКА за ${formatDateForDisplay(displayDate)} (Отчетов: ${data.total_reports || 0})
+            const today = new Date();
+            const displayDate = today.toLocaleDateString('ru-RU', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            });
+            
+            const text = `ОБЩАЯ СТАТИСТИКА РЕГИОНА за ${displayDate} (Отчетов: ${data.total_reports || 0})
 
 🌻 СЕМЕЧКА:
 ${(data.total_seed_plan || 0).toFixed(1)}/${(data.total_seed_fact || 0).toFixed(1)}/${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
@@ -832,7 +908,13 @@ N + 1: ${data.total_npone || 0}
             const container = document.getElementById('statsContainer');
             
             if (!stats || stats.length === 0) {
-                container.innerHTML = '<div class="no-data">👥 Отчеты по сотрудникам пока не поступили</div>';
+                // Показываем только желтую подсказку, таблицу не выводим
+                container.innerHTML = `
+                    <div class="stats-table-container">
+                        <div class="stats-table-title">👤 Ваши отчеты за сегодня</div>
+                        <div class="no-data">📋 Отчеты за сегодня еще не отправлялись. Используйте "Заполнить данные" для создания нового отчета.</div>
+                    </div>
+                `;
                 return;
             }
     
@@ -840,24 +922,26 @@ N + 1: ${data.total_npone || 0}
                 <tr>
                     <td>
                         ${stat.name || 'Не указано'}
-                        <button class="edit-button" onclick="openEditModal(${index})" title="Редактировать">
-                            ✏️
-                        </button>
+                        ${stat.name === currentUser?.username ? `
+                            <button class="edit-button" onclick="openEditModal(${index})" title="Редактировать">
+                                ✏️
+                            </button>
+                        ` : ''}
                     </td>
                     <td class="seed-col">${(stat.seed_plan || 0).toFixed(1)}</td>
                     <td class="seed-col">${(stat.seed_fact || 0).toFixed(1)}</td>
                     <td class="seed-col ${(stat.seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(stat.seed_dif || 0) >= 0 ? '+' : ''}${(stat.seed_dif || 0).toFixed(1)}
+                        ${(stat.seed_dif || 0).toFixed(1)}
                     </td>
                     <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(1)}</td>
                     <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(1)}</td>
                     <td class="pumpkin-col ${(stat.pumpkin_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(stat.pumpkin_dif || 0) >= 0 ? '+' : ''}${(stat.pumpkin_dif || 0).toFixed(1)}
+                        ${(stat.pumpkin_dif || 0).toFixed(1)}
                     </td>
                     <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(1)}</td>
                     <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(1)}</td>
                     <td class="peanut-col ${(stat.peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(stat.peanut_dif || 0) >= 0 ? '+' : ''}${(stat.peanut_dif || 0).toFixed(1)}
+                        ${(stat.peanut_dif || 0).toFixed(1)}
                     </td>
                     <td>${stat.akb1 || 0}</td>
                     <td>${stat.akb2 || 0}</td>
@@ -873,7 +957,7 @@ N + 1: ${data.total_npone || 0}
     
             container.innerHTML = `
                 <div class="stats-table-container">
-                    <div class="stats-table-title">👥 Отчеты от торговых представителей</div>
+                    <div class="stats-table-title">👤 Ваши отчеты за сегодня</div>
                     <table class="stats-table">
                         <thead>
                             <tr>
@@ -935,7 +1019,7 @@ N + 1: ${data.total_npone || 0}
             document.getElementById('top_five').value = stat.top_five || 0;
             document.getElementById('news').value = stat.news || 0;
 
-            document.querySelector('.modal-title').textContent = `Редактирование данных: ${stat.name || 'Без имени'}`;
+            document.querySelector('.modal-title').textContent = `Редактирование ваших данных`;
             document.getElementById('editModal').style.display = 'block';
         }
 
@@ -984,14 +1068,8 @@ N + 1: ${data.total_npone || 0}
                 });
         
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    let errorMessage;
-                    try {
-                        const errorData = JSON.parse(errorText);
-                        errorMessage = errorData.error || errorData.message || 'Unknown error';
-                    } catch {
-                        errorMessage = errorText || `HTTP error! status: ${response.status}`;
-                    }
+                    const errorData = await response.json();
+                    const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
                     throw new Error(errorMessage);
                 }
         
@@ -1019,28 +1097,6 @@ N + 1: ${data.total_npone || 0}
                 }, 3000);
             }
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTotalStats();
-            loadStats();
-
-            document.querySelector('.close').onclick = closeEditModal;
-            document.getElementById('cancelEdit').onclick = closeEditModal;
-            document.getElementById('saveEdit').onclick = saveEditedData;
-
-            window.onclick = function(event) {
-                const modal = document.getElementById('editModal');
-                if (event.target === modal) {
-                    closeEditModal();
-                }
-            };
-
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeEditModal();
-                }
-            });
-        });
     </script>
 </body>
 </html>

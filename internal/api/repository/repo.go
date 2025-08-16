@@ -16,8 +16,10 @@ type DjnRepo interface {
 	PostStat(stat *models.StatDaily) error
 	PatchStat(regionID uint, stat *models.StatDaily) error
 	GetStatsByRegion(regionID uint) ([]models.StatDaily, error)
+	GetStatsByRegionAndUser(regionID uint, username string) ([]models.StatDaily, error)
 	DeleteOlderThan(cutoffDate time.Time) error
 	GetStatsByMonth(regionID uint, date string) ([]models.StatDaily, error)
+	GetStatsByMonthAndUser(regionID uint, username string, date string) ([]models.StatDaily, error)
 }
 
 type djnRepo struct {
@@ -41,6 +43,24 @@ func (r *djnRepo) DeleteOlderThan(cutoffDate time.Time) error {
 func (r *djnRepo) GetStatsByMonth(regionID uint, date string) ([]models.StatDaily, error) {
 	var stats []models.StatDaily
 	result := r.db.Where("region_id = ? AND date = ?", regionID, date).Find(&stats)
+	if result.Error != nil {
+		return nil, fmt.Errorf("%w: %v", errs.ErrDBOperation, result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("%w", errs.ErrNotFound)
+	}
+
+	return stats, nil
+}
+
+func (r *djnRepo) GetStatsByMonthAndUser(
+	regionID uint,
+	username string,
+	date string,
+) ([]models.StatDaily, error) {
+	var stats []models.StatDaily
+	result := r.db.Where("region_id = ? AND name = ? AND date = ?", regionID, username, date).
+		Find(&stats)
 	if result.Error != nil {
 		return nil, fmt.Errorf("%w: %v", errs.ErrDBOperation, result.Error)
 	}
@@ -95,6 +115,26 @@ func (r *djnRepo) GetStatsByRegion(regionID uint) ([]models.StatDaily, error) {
 	today := time.Now().Format("2006-01-02") // YYYY-MM-DD
 
 	result := r.db.Where("region_id = ? AND date = ?", regionID, today).Find(&stats)
+	if result.Error != nil {
+		return nil, fmt.Errorf("%w: %v", errs.ErrDBOperation, result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("%w", errs.ErrNotFound)
+	}
+
+	return stats, nil
+}
+
+func (r *djnRepo) GetStatsByRegionAndUser(
+	regionID uint,
+	username string,
+) ([]models.StatDaily, error) {
+	var stats []models.StatDaily
+	today := time.Now().Format("2006-01-02") // YYYY-MM-DD
+
+	result := r.db.Where("region_id = ? AND name = ? AND date = ?", regionID, username, today).
+		Find(&stats)
 	if result.Error != nil {
 		return nil, fmt.Errorf("%w: %v", errs.ErrDBOperation, result.Error)
 	}

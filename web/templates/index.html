@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.title}} - {{.region_name}}</title>
-    <link rel="icon" href="./images/djin_logo.png" type="image/png">
+    <link rel="icon" href="../images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,16 +43,28 @@
             gap: 15px;
         }
 
-        .region-badge {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
+        .user-badge {
+            background: #A5D6A7;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
+            color: #1B5E20;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .region-badge {
+            background: #A5D6A7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1B5E20;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
         .logout-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: #F44336;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -60,20 +72,22 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
         .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #d32f2f;
+            transform: translateY(-2px);
         }
 
         .container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            padding: 20px;
+            padding: 10px 20px;
             max-width: 1000px;
             margin: 0 auto;
         }
@@ -82,20 +96,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .smart-logo {
-            height: 120px;
+            height: 100px;
             width: auto;
         }
 
         .welcome-text {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             text-align: center;
             max-width: 500px;
             width: 100%;
@@ -118,7 +132,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .djin-logo {
@@ -133,26 +147,27 @@
             align-items: center;
             flex: 1;
             justify-content: space-between;
-            min-height: 400px;
+            min-height: 250px;
         }
 
         .top-buttons {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 20px;
+            gap: 18px;
             align-items: center;
-            margin-bottom: 40px;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .bottom-button {
             margin-top: auto;
-            margin-bottom: 40px;
+            margin-bottom: 15px;
         }
 
         .action-button {
-            padding: 20px 30px;
-            font-size: 18px;
+            padding: 22px 34px;
+            font-size: 19px;
             font-weight: bold;
             border: none;
             border-radius: 8px;
@@ -162,7 +177,7 @@
             text-decoration: none;
             display: block;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            min-width: 280px;
+            min-width: 300px;
         }
 
         .fill-data-btn {
@@ -210,6 +225,16 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .footer {
+            text-align: center;
+            color: #555555;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.4;
+            padding: 5px;
+            margin-top: auto;
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -219,18 +244,19 @@
 
             .user-info {
                 justify-content: center;
+                flex-wrap: wrap;
             }
 
             .container {
-                padding: 15px;
+                padding: 10px 15px;
             }
 
             .smart-logo {
-                height: 100px;
+                height: 80px;
             }
 
             .djin-logo {
-                height: 70px;
+                height: 60px;
             }
 
             .welcome-text {
@@ -247,7 +273,12 @@
             }
 
             .main-content {
-                min-height: 350px;
+                min-height: 200px;
+            }
+
+            .footer {
+                font-size: 15px;
+                padding: 5px;
             }
         }
 
@@ -260,27 +291,27 @@
                 font-size: 1.5rem;
             }
 
-            .region-badge, .logout-btn {
+            .user-badge, .region-badge, .logout-btn {
                 padding: 8px 15px;
                 font-size: 14px;
             }
 
             .smart-logo {
-                height: 80px;
+                height: 70px;
             }
 
             .djin-logo {
-                height: 60px;
+                height: 55px;
             }
 
             .smart-logo-container, .djin-logo-container {
-                margin-bottom: 20px;
+                margin-bottom: 10px;
             }
 
             .welcome-text {
                 max-width: 320px;
-                padding: 25px 20px;
-                margin-bottom: 25px;
+                padding: 18px 15px;
+                margin-bottom: 15px;
             }
 
             .welcome-text h3 {
@@ -302,22 +333,23 @@
             }
 
             .top-buttons {
-                gap: 15px;
+                gap: 12px;
             }
 
             .main-content {
-                min-height: 300px;
+                min-height: 180px;
             }
 
-            .bottom-button {
-                margin-bottom: 20px;
+            .footer {
+                font-size: 14px;
+                padding: 5px 10px;
             }
         }
 
         @media (max-width: 400px) {
             .welcome-text {
                 max-width: 300px;
-                padding: 20px 15px;
+                padding: 15px 12px;
             }
 
             .action-button {
@@ -328,6 +360,10 @@
             .test-button {
                 min-width: 240px;
             }
+
+            .footer {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -336,7 +372,8 @@
         <div class="header-content">
             <h1>{{.title}}</h1>
             <div class="user-info">
-                <div class="region-badge">{{.region_name}}</div>
+                <div class="user-badge">👤 {{.username}}</div>
+                <div class="region-badge">📍 {{.region_name}}</div>
                 <button class="logout-btn" onclick="logout()">Выйти</button>
             </div>
         </div>
@@ -344,16 +381,15 @@
 
     <div class="container">
         <div class="smart-logo-container">
-            <img src="./images/smart_logo.png" alt="Smart логотип" class="smart-logo">
+            <img src="../images/smart_logo.png" alt="Smart логотип" class="smart-logo">
         </div>
 
         <div class="welcome-text">
             <h3>Добро пожаловать в систему!</h3>
-            <p>Ваш текущий регион: <strong>{{.region_name}}</strong></p>
         </div>
 
         <div class="djin-logo-container">
-            <img src="./images/djin_logo.png" alt="Логотип компании" class="djin-logo">
+            <img src="../images/djin_logo.png" alt="Логотип компании" class="djin-logo">
         </div>
 
         <div class="main-content">
@@ -375,6 +411,10 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    <div class="footer">
+        Краснодарский край<br>г. Тихорецк
     </div>
 
     <script>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ввод статистики</title>
-    <link rel="icon" href="./images/djin_logo.png" type="image/png">
+    <link rel="icon" href="../images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,6 +42,10 @@
         .header-title {
             text-align: center;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
 
         .header-title h4 {
@@ -64,34 +68,6 @@
             border-radius: 5px;
             background-color: rgba(255, 255, 255, 0.8);
             position: relative;
-        }
-
-        .section.surname {
-            background-color: rgba(147, 112, 219, 0.2);
-            border-left: 4px solid #9370DB;
-            display: flex;
-            align-items: center;
-        }
-
-        .section.surname .section-content {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            width: 100%;
-        }
-
-        .section.surname h3 {
-            margin: 0;
-            min-width: 80px;
-            font-weight: bold;
-        }
-
-        .text-input {
-            padding: 8px 10px;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
         }
 
         .section.seed,
@@ -268,23 +244,17 @@
                 height: 60px;
             }
             
-            .section.surname .section-content,
             .section.seed .section-content,
             .section.pumpkin .section-content,
             .section.peanut .section-content {
                 gap: 15px;
             }
             
-            .section.surname h3,
             .section.seed h3,
             .section.pumpkin h3,
             .section.peanut h3 {
                 min-width: 60px;
                 font-size: 14px;
-            }
-            
-            .text-input {
-                width: 150px;
             }
             
             .input-group input {
@@ -308,6 +278,11 @@
         @media (max-width: 480px) {
             .header-title h4 {
                 font-size: 1em;
+                padding: 0 40px;
+            }
+            
+            .header-title {
+                gap: 10px;
             }
             
             .logo {
@@ -320,24 +295,17 @@
                 font-size: 12px;
             }
             
-            .section.surname .section-content,
             .section.seed .section-content,
             .section.pumpkin .section-content,
             .section.peanut .section-content {
                 gap: 10px;
             }
             
-            .section.surname h3,
             .section.seed h3,
             .section.pumpkin h3,
             .section.peanut h3 {
                 min-width: 50px;
                 font-size: 13px;
-            }
-            
-            .text-input {
-                width: 120px;
-                padding: 6px 8px;
             }
             
             .input-group input {
@@ -366,6 +334,7 @@
         @media (max-width: 360px) {
             .header-title h4 {
                 font-size: 0.9em;
+                padding: 0 30px;
             }
             
             .logo {
@@ -380,22 +349,12 @@
         <div class="header-title">
             <h4>Ввод данных</h4>
         </div>
-        <img src="./images/djin_logo.png" alt="Логотип компании" class="logo">
+        <img src="../images/djin_logo.png" alt="Логотип компании" class="logo">
     </div>
 
     <div id="messageContainer"></div>
 
     <form id="statForm">
-        <!-- Поле для фамилии -->
-        <div class="section surname">
-            <div class="section-content">
-                <h3>Фамилия</h3>
-                <div class="input-group">
-                    <input type="text" id="surname" name="surname" class="text-input" required>
-                </div>
-            </div>
-        </div>
-
         <!-- Семена -->
         <div class="section seed">
             <div class="section-content">
@@ -490,8 +449,40 @@
     </form>
 
     <script>
+        let currentUser = null;
+
+        // Загрузка информации о текущем пользователе при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCurrentUser();
+        });
+
+        async function loadCurrentUser() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const userData = await response.json();
+                    if (userData.success) {
+                        currentUser = userData;
+                        document.getElementById('userDisplay').textContent = userData.username;
+                    } else {
+                        document.getElementById('userDisplay').textContent = 'Пользователь не найден';
+                    }
+                } else {
+                    document.getElementById('userDisplay').textContent = 'Ошибка загрузки';
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке пользователя:', error);
+                document.getElementById('userDisplay').textContent = 'Ошибка соединения';
+            }
+        }
+
         document.getElementById('statForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            if (!currentUser) {
+                showMessage('Ошибка: информация о пользователе не загружена', 'error');
+                return;
+            }
             
             const submitBtn = document.getElementById('submitBtn');
             const messageContainer = document.getElementById('messageContainer');
@@ -504,9 +495,8 @@
             // Собираем данные из формы
             const formData = new FormData(this);
             
-            // Подготавливаем объект данных согласно структуре Go
+            // Подготавливаем объект данных (имя пользователя будет установлено автоматически на сервере)
             const data = {
-                name: formData.get('surname') || '',
                 seed_plan: parseFloat(formData.get('seed_plan')) || 0,
                 seed_fact: parseFloat(formData.get('seed_fact')) || 0,
                 pumpkin_plan: parseFloat(formData.get('pumpkin_plan')) || 0,
@@ -543,24 +533,18 @@
                         hideMessage();
                     }, 1000);
                 } else {
-                    const errorText = await response.text();
+                    const errorData = await response.json();
                     
-                    // Проверяем, является ли это ошибкой дублирования имени
-                    if (errorText.includes('Duplicate name')) {
-                        showMessage('Запись с таким именем уже существует! Пожалуйста, используйте другое имя.', 'error', 3000);
+                    // Проверяем, является ли это ошибкой дублирования
+                    if (errorData.error && errorData.error.includes('already submitted')) {
+                        showMessage('Вы уже отправляли данные за сегодня! Используйте функцию "Посмотреть данные" для редактирования.', 'error', 5000);
                     } else {
-                        showMessage(`Ошибка при отправке данных: ${errorText}`, 'error', 3000);
+                        showMessage(`Ошибка при отправке данных: ${errorData.error || 'Неизвестная ошибка'}`, 'error', 3000);
                     }
                 }
             } catch (error) {
                 console.error('Ошибка при отправке данных:', error);
-                
-                // Проверяем, содержит ли ошибка информацию о дублировании
-                if (error.message.includes('Duplicate name')) {
-                    showMessage('Запись с таким именем уже существует! Пожалуйста, используйте другое имя.', 'error', 3000);
-                } else {
-                    showMessage(`Ошибка при отправке данных: ${error.message}`, 'error', 3000);
-                }
+                showMessage(`Ошибка при отправке данных: ${error.message}`, 'error', 3000);
             } finally {
                 // Восстанавливаем кнопку
                 submitBtn.disabled = false;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.title}}</title>
-    <link rel="icon" href="./images/djin_logo.png" type="image/png">
+    <link rel="icon" href="../images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,28 +85,13 @@
             font-size: 16px;
             transition: border-color 0.3s ease;
             box-sizing: border-box;
+        }
+
+        .form-group input[type="password"] {
             padding-right: 45px; /* Добавляем место для кнопки */
         }
 
-        .form-group select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 15px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #4CAF50;
         }
@@ -195,6 +180,41 @@
             justify-content: center;
         }
 
+        .demo-users {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .demo-users h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .demo-users ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .demo-users li {
+            padding: 8px 0;
+            color: #6c757d;
+            font-size: 14px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .demo-users li:last-child {
+            border-bottom: none;
+        }
+
+        .demo-users strong {
+            color: #495057;
+        }
+
         @media (max-width: 768px) {
             .login-container {
                 padding: 30px;
@@ -211,6 +231,11 @@
 
             .login-header h1 {
                 font-size: 1.8em;
+            }
+
+            .demo-users {
+                margin-top: 20px;
+                padding: 15px;
             }
         }
 
@@ -231,14 +256,26 @@
                 font-size: 1.6em;
             }
 
-            .form-group input,
-            .form-group select {
+            .form-group input {
                 padding: 12px;
+            }
+
+            .form-group input[type="password"] {
+                padding-right: 40px;
             }
 
             .login-btn {
                 padding: 15px;
                 font-size: 16px;
+            }
+
+            .demo-users {
+                margin-top: 15px;
+                padding: 10px;
+            }
+
+            .demo-users h3 {
+                font-size: 1.1em;
             }
         }
     </style>
@@ -246,7 +283,7 @@
 <body>
     <div class="login-container">
         <div class="logo-container">
-            <img src="./images/smart_logo.png" alt="Логотип Smart" class="smart-logo">
+            <img src="../images/smart_logo.png" alt="Логотип Smart" class="smart-logo">
         </div>
 
         <div class="login-header">
@@ -254,21 +291,15 @@
         </div>
 
         <div class="djin-logo-container">
-            <img src="./images/djin_logo.png" alt="Логотип Джин" class="djin-logo">
+            <img src="../images/djin_logo.png" alt="Логотип Джин" class="djin-logo">
         </div>
 
         <div id="alert" class="alert"></div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="login">Регион:</label>
-                <select id="login" name="login" required>
-                    <option value="" disabled selected>Выберите регион</option>
-                    <option value="moscow">Московская область</option>
-                    <option value="spb">Санкт-Петербург</option>
-                    <option value="krasnodar">Краснодарский край</option>
-                    <option value="kazan">Республика Татарстан</option>
-                </select>
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" placeholder="Введите имя пользователя" required>
             </div>
 
             <div class="form-group">
@@ -291,6 +322,17 @@
                 </div>
             </button>
         </form>
+
+        <div class="demo-users">
+            <h3>Тестовые аккаунты:</h3>
+            <ul>
+                <li><strong>ivan</strong> - 123 (Московская область)</li>
+                <li><strong>admin_msk</strong> - 123 (Московская область)</li>
+                <li><strong>elena</strong> - 123 (Санкт-Петербург)</li>
+                <li><strong>man</strong> - man (Санкт-Петербург)</li>
+                <li><strong>anna</strong> - 123 (Санкт-Петербург)</li>
+            </ul>
+        </div>
     </div>
 
     <script>
@@ -321,7 +363,7 @@
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const login = document.getElementById('login').value;
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const alert = document.getElementById('alert');
             const spinner = document.getElementById('spinner');
@@ -340,7 +382,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ login, password })
+                    body: JSON.stringify({ username, password })
                 });
                 
                 const data = await response.json();
@@ -350,7 +392,7 @@
                     alert.textContent = data.message + '. Перенаправление...';
                     alert.style.display = 'block';
                     
-                    // Перенаправление через 1 секунду на index.html
+                    // Перенаправление через 1 секунду на dashboard
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1000);
@@ -370,8 +412,8 @@
             }
         });
         
-        // Автофокус на поле пароля (так как регион теперь выбирается из списка)
-        document.getElementById('password').focus();
+        // Автофокус на поле username
+        document.getElementById('username').focus();
     </script>
 </body>
 </html>
