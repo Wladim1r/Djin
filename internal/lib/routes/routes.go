@@ -13,6 +13,7 @@ func SetupRoutes(
 	authController *auth.AuthController,
 	djnHandler *handler.DjnHandler,
 ) {
+	r.Static("/images", "./web/images")
 	// Публичные маршруты (без авторизации)
 	r.GET("/login", authController.ShowLoginForm)
 	r.POST("/auth/login", authController.Login)
@@ -44,7 +45,6 @@ func SetupRoutes(
 			})
 		})
 
-		protected.Static("/images", "./web/images")
 		protected.StaticFile("/inputStat.html", "./web/static/inputStat.html")
 		protected.StaticFile("/viewStats.html", "./web/static/viewStats.html")
 		protected.StaticFile("/monthStat.html", "./web/static/monthStat.html")

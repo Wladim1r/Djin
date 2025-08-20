@@ -637,7 +637,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:8080/djin';
+        const API_BASE_URL = 'http://87.228.103.252:8080/djin';
         let currentEditingData = null;
         let currentUser = null;
 
@@ -841,16 +841,9 @@
             
             const text = `ОБЩАЯ СТАТИСТИКА РЕГИОНА за ${displayDate} (Отчетов: ${data.total_reports || 0})
 
-🌻 СЕМЕЧКА:
 ${(data.total_seed_plan || 0).toFixed(1)}/${(data.total_seed_fact || 0).toFixed(1)}/${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
-
-🎃 ТЫКВА:
 ${(data.total_pumpkin_plan || 0).toFixed(1)}/${(data.total_pumpkin_fact || 0).toFixed(1)}/${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
-
-🥜 АРАХИС:
 ${(data.total_peanut_plan || 0).toFixed(1)}/${(data.total_peanut_fact || 0).toFixed(1)}/${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
-
-ДОПОЛНИТЕЛЬНЫЕ ПОКАЗАТЕЛИ:
 АКБ: ${totalAkb}
 Новые ТТ: ${data.total_newtt || 0}
 Микс: ${data.total_mix || 0}

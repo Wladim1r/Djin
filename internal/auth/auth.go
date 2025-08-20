@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -115,6 +116,11 @@ func (ac *AuthController) ShowLoginForm(c *gin.Context) {
 func (ac *AuthController) Login(c *gin.Context) {
 	var req LoginRequest
 
+	log.Printf("[LOGIN] Начало процедуры входа")
+	log.Printf("[LOGIN] Content-Type: %s", c.GetHeader("Content-Type"))
+	log.Printf("[LOGIN] User-Agent: %s", c.GetHeader("User-Agent"))
+	log.Printf("[LOGIN] Remote Address: %s", c.ClientIP())
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, LoginResponse{
 			Success: false,
@@ -122,6 +128,8 @@ func (ac *AuthController) Login(c *gin.Context) {
 		})
 		return
 	}
+
+	log.Printf("[LOGIN] Попытка авторизации пользователя: %s", req.Username)
 
 	user, err := ac.authService.Authenticate(req.Username, req.Password)
 	if err != nil {
@@ -132,21 +140,36 @@ func (ac *AuthController) Login(c *gin.Context) {
 		return
 	}
 
+	log.Printf("[LOGIN] Пользователь %s успешно авторизован", user.Username)
+
 	session := sessions.Default(c)
 	session.Set("user_id", user.ID)
 	session.Set("username", user.Username)
 	session.Set("region_id", user.RegionID)
 	session.Set("region_name", user.Region.Name)
-	session.Save()
 
-	c.JSON(http.StatusOK, LoginResponse{
+	if err := session.Save(); err != nil {
+		log.Printf("[LOGIN] Ошибка сохранения сессии: %v", err)
+		c.JSON(http.StatusInternalServerError, LoginResponse{
+			Success: false,
+			Message: "Ошибка создания сессии",
+		})
+		return
+	}
+
+	log.Printf("[LOGIN] Сессия сохранена для пользователя %s (ID: %d)", user.Username, user.ID)
+
+	response := LoginResponse{
 		Success:    true,
 		Message:    "Успешный вход",
 		UserID:     user.ID,
 		Username:   user.Username,
 		RegionID:   user.RegionID,
 		RegionName: user.Region.Name,
-	})
+	}
+
+	log.Printf("[LOGIN] Отправляем успешный ответ: %+v", response)
+	c.JSON(http.StatusOK, response)
 }
 
 func (ac *AuthController) Logout(c *gin.Context) {
@@ -187,10 +210,16 @@ func (ac *AuthController) GetCurrentUser(c *gin.Context) {
 // Middleware для проверки авторизации
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log.Printf("[AUTH_MIDDLEWARE] Проверка авторизации для URL: %s", c.Request.URL.Path)
+
 		session := sessions.Default(c)
 		userID := session.Get("user_id")
 
+		log.Printf("[AUTH_MIDDLEWARE] UserID из сессии: %v", userID)
+
 		if userID == nil {
+			log.Printf("[AUTH_MIDDLEWARE] Пользователь не авторизован, перенаправление на /login")
+
 			// Для AJAX запросов возвращаем JSON
 			if c.GetHeader("Content-Type") == "application/json" ||
 				c.GetHeader("Accept") == "application/json" {

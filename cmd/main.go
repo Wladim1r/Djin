@@ -55,7 +55,6 @@ func main() {
 		Path:     "/",
 		MaxAge:   86400 * 7,
 		HttpOnly: true,
-		Secure:   os.Getenv("ENV") == "production",
 	})
 	router.Use(sessions.Sessions("session", store))
 
