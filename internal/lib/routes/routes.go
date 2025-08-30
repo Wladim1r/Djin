@@ -14,6 +14,8 @@ func SetupRoutes(
 	djnHandler *handler.DjnHandler,
 ) {
 	r.Static("/images", "./web/images")
+	r.Static("/static", "./web/static")
+
 	// Публичные маршруты (без авторизации)
 	r.GET("/login", authController.ShowLoginForm)
 	r.POST("/auth/login", authController.Login)
@@ -24,7 +26,7 @@ func SetupRoutes(
 	protected.Use(auth.AuthMiddleware(), auth.RegionContextMiddleware())
 	{
 		// Информация о текущем пользователе
-		protected.GET("/auth/me", authController.GetMe) // Новый эндпоинт
+		protected.GET("/auth/me", authController.GetMe)
 
 		// Маршруты для работы со статистикой
 		djinRoutes := protected.Group("/djin")
@@ -36,18 +38,48 @@ func SetupRoutes(
 			djinRoutes.GET("/month", djnHandler.GetStatByMonth)
 		}
 
+		// Административные маршруты (только для администраторов)
+		adminRoutes := protected.Group("/admin")
+		adminRoutes.Use(auth.AdminMiddleware())
+		{
+			// Управление пользователями
+			adminRoutes.POST("/users", authController.CreateUser)
+			adminRoutes.GET("/users", authController.GetAllUsers)
+			adminRoutes.PUT("/users/:id", authController.UpdateUser)
+			adminRoutes.DELETE("/users/:id", authController.DeleteUser)
+
+			// Получение списка регионов
+			adminRoutes.GET("/regions", authController.GetRegions)
+
+			// Административная панель
+			adminRoutes.GET("/panel", func(c *gin.Context) {
+				c.HTML(http.StatusOK, "admin_panel.html", gin.H{
+					"title":       "Административная панель",
+					"username":    c.GetString("username"),
+					"region_name": c.GetString("region_name"),
+				})
+			})
+		}
+
+		protected.GET("/inputStat", func(c *gin.Context) {
+			c.File("./web/static/inputStat.html")
+		})
+		protected.GET("/viewStats", func(c *gin.Context) {
+			c.File("./web/static/viewStats.html")
+		})
+		protected.GET("/monthStat", func(c *gin.Context) {
+			c.File("./web/static/monthStat.html")
+		})
+
 		// Статические страницы
 		protected.GET("/dashboard", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "index.html", gin.H{
 				"title":       "Панель управления",
 				"username":    c.GetString("username"),
+				"role":        c.GetString("role"),
 				"region_name": c.GetString("region_name"),
 			})
 		})
-
-		protected.StaticFile("/inputStat.html", "./web/static/inputStat.html")
-		protected.StaticFile("/viewStats.html", "./web/static/viewStats.html")
-		protected.StaticFile("/monthStat.html", "./web/static/monthStat.html")
 	}
 
 	// Редирект с корня на дашборд

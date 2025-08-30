@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Мои исторические данные</title>
-    <link href="../images/djin_logo.png" rel="icon" type="image/png"/>
+    <link href="/images/djin_logo.png" rel="icon" type="image/png"/>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -484,7 +484,7 @@
 <div class="header-title">
 <h4>Мои исторические данные</h4>
 </div>
-<img alt="Логотип компании" class="logo" src="../images/djin_logo.png"/>
+<img alt="Логотип компании" class="logo" src="/images/djin_logo.png"/>
 </div>
 
 <div class="date-control-panel">
@@ -524,17 +524,17 @@
     </div>
 <div id="statsContainer"></div>
 <script>
-        const API_BASE_URL = 'http://87.228.103.252:8080/djin';
+        const API_BASE_URL = '/djin';
         let currentSelectedDate = null;
         let currentUser = null;
-
+        
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', async function() {
             await loadCurrentUser();
             initializeDatePicker();
             updateToggleState();
         });
-
+        
         async function loadCurrentUser() {
             try {
                 const response = await fetch('/auth/me');
@@ -542,8 +542,7 @@
                     const userData = await response.json();
                     if (userData.success) {
                         currentUser = userData;
-                        // Удаляем эту строку, так как элемент userDisplay не существует
-                        // document.getElementById('userDisplay').textContent = userData.username;
+                        console.log('Пользователь загружен:', userData.username);
                     } else {
                         console.log('Пользователь не найден');
                     }
@@ -554,9 +553,14 @@
                 console.error('Ошибка при загрузке пользователя:', error);
             }
         }
-
+        
         function initializeDatePicker() {
             const dateInput = document.getElementById('selectedDate');
+            if (!dateInput) {
+                console.error('Элемент selectedDate не найден');
+                return;
+            }
+            
             const today = new Date();
             const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
             
@@ -577,19 +581,19 @@
             
             loadDataForDate();
         }
-
+        
         function formatDateForInput(date) {
             return date.getFullYear() + '-' + 
                    String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                    String(date.getDate()).padStart(2, '0');
         }
-
+        
         function formatDateForAPI(date) {
             return date.getFullYear() + '-' + 
                    String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                    String(date.getDate()).padStart(2, '0');
         }
-
+        
         function formatDateForDisplay(date) {
             const options = { 
                 year: 'numeric', 
@@ -599,24 +603,35 @@
             };
             return date.toLocaleDateString('ru-RU', options);
         }
-
+        
         function selectQuickDate(daysAgo) {
             const date = new Date();
             date.setDate(date.getDate() - daysAgo);
             
-            document.getElementById('selectedDate').value = formatDateForInput(date);
+            const dateInput = document.getElementById('selectedDate');
+            if (dateInput) {
+                dateInput.value = formatDateForInput(date);
+            }
+            
             currentSelectedDate = formatDateForAPI(date);
             updateSelectedDateInfo(date);
             
             // Визуальная обратная связь для кнопок
             document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             loadDataForDate();
         }
-
+        
         function updateSelectedDateInfo(date) {
             const infoDiv = document.getElementById('selectedDateInfo');
+            if (!infoDiv) {
+                console.error('Элемент selectedDateInfo не найден');
+                return;
+            }
+            
             const isToday = formatDateForAPI(date) === formatDateForAPI(new Date());
             const daysDiff = Math.ceil((new Date() - date) / (1000 * 60 * 60 * 24));
             
@@ -637,20 +652,25 @@
             `;
             infoDiv.style.display = 'block';
         }
-
+        
         function toggleUserFilter() {
             const checkbox = document.getElementById('toggleUserStats');
-            checkbox.checked = !checkbox.checked;
-            updateToggleState();
-            loadDataForDate();
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                updateToggleState();
+                loadDataForDate();
+            }
         }
-
+        
         function updateToggleState() {
             const wrapper = document.getElementById('toggleWrapper');
             const checkbox = document.getElementById('toggleUserStats');
-            const label = wrapper.querySelector('.toggle-label');
+            const label = wrapper ? wrapper.querySelector('.toggle-label') : null;
         
-            if (!checkbox || !wrapper) return; // защита от ошибок
+            if (!checkbox || !wrapper || !label) {
+                console.error('Не найдены элементы переключателя');
+                return;
+            }
         
             if (checkbox.checked) {
                 wrapper.classList.add('active');
@@ -660,10 +680,10 @@
                 label.textContent = 'Данные по региону';
             }
         }
-
+        
         function loadDataForDate() {
             const dateInput = document.getElementById('selectedDate');
-            const selectedDate = dateInput.value;
+            const selectedDate = dateInput ? dateInput.value : null;
             
             if (!selectedDate) {
                 alert('Пожалуйста, выберите дату');
@@ -675,58 +695,81 @@
             updateSelectedDateInfo(date);
             
             // Очищаем предыдущие данные
-            document.getElementById('statsContainer').innerHTML = '';
+            const statsContainer = document.getElementById('statsContainer');
+            if (statsContainer) {
+                statsContainer.innerHTML = '';
+            }
             
             // Показываем индикатор загрузки
-            document.getElementById('loadingStats').style.display = 'block';
+            const loadingStats = document.getElementById('loadingStats');
+            if (loadingStats) {
+                loadingStats.style.display = 'block';
+            }
             
             // Блокируем кнопку загрузки
             const loadButton = document.querySelector('.load-button');
             const buttonText = document.getElementById('loadButtonText');
-            loadButton.disabled = true;
-            buttonText.innerHTML = '<div class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px; margin-right: 8px;"></div>Загрузка...';
+            if (loadButton && buttonText) {
+                loadButton.disabled = true;
+                buttonText.innerHTML = '<div class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px; margin-right: 8px;"></div>Загрузка...';
+            }
             
             // Загружаем данные пользователя
             loadStatsForDate(selectedDate).finally(() => {
                 // Разблокируем кнопку
-                loadButton.disabled = false;
-                buttonText.textContent = '📊 Загрузить';
+                if (loadButton && buttonText) {
+                    loadButton.disabled = false;
+                    buttonText.textContent = 'Загрузить';
+                }
             });
         }
-
+        
         async function loadStatsForDate(date) {
             try {
-                const onlyUser = document.getElementById('toggleUserStats')?.checked ?? true;
+                const toggleUserStats = document.getElementById('toggleUserStats');
+                const onlyUser = toggleUserStats ? toggleUserStats.checked : true;
+                
                 const response = await fetch(`${API_BASE_URL}/month?date=${date}&user=${onlyUser}`);
                 if (response.status === 404) {
                     throw new Error(onlyUser ? 'У вас нет данных за выбранную дату' : 'Нет данных по региону за выбранную дату');
                 }
                 if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
-
+        
                 const stats = await response.json();
-
+        
                 const statsWithDiff = stats.map(stat => ({
                     ...stat,
                     seed_dif: (stat.seed_fact || 0) - (stat.seed_plan || 0),
                     pumpkin_dif: (stat.pumpkin_fact || 0) - (stat.pumpkin_plan || 0),
                     peanut_dif: (stat.peanut_fact || 0) - (stat.peanut_plan || 0)
                 }));
-
+        
                 displayStats(statsWithDiff, date);
             } catch (error) {
                 console.error('Ошибка при загрузке статистики:', error);
-                document.getElementById('statsContainer').innerHTML =
-                    `<div class="no-data">❌ ${error.message}</div>`;
+                const statsContainer = document.getElementById('statsContainer');
+                if (statsContainer) {
+                    statsContainer.innerHTML = `<div class="no-data">⌛ ${error.message}</div>`;
+                }
             } finally {
-                document.getElementById('loadingStats').style.display = 'none';
+                const loadingStats = document.getElementById('loadingStats');
+                if (loadingStats) {
+                    loadingStats.style.display = 'none';
+                }
             }
         }
-
+        
         function displayStats(stats, date) {
             const container = document.getElementById('statsContainer');
+            if (!container) {
+                console.error('Элемент statsContainer не найден');
+                return;
+            }
+            
             const displayDate = new Date(date + 'T00:00:00');
-            const onlyUser = document.getElementById('toggleUserStats')?.checked ?? true;
-
+            const toggleUserStats = document.getElementById('toggleUserStats');
+            const onlyUser = toggleUserStats ? toggleUserStats.checked : true;
+        
             if (!stats || stats.length === 0) {
                 container.innerHTML = `
                     <div class="no-data">
@@ -735,14 +778,14 @@
                 `;
                 return;
             }
-
+        
             let tableRows = '';
-
+        
             stats.forEach(stat => {
                 const seedDif = stat.seed_dif || 0;
                 const pumpkinDif = stat.pumpkin_dif || 0;
                 const peanutDif = stat.peanut_dif || 0;
-
+        
                 tableRows += `
                     <tr>
                         <td>${stat.name || 'Без названия'}</td>
@@ -773,16 +816,16 @@
                     </tr>
                 `;
             });
-
+        
             const reportTitle = onlyUser ? 'Ваш отчет' : 'Отчеты по региону';
             const countSuffix = onlyUser ? '' : ` (${stats.length} записей)`;
-
+        
             container.innerHTML = `
                 <div class="stats-table-container">
                     <div class="stats-table-title">
                         📋 ${reportTitle} за ${formatDateForDisplay(displayDate)}${countSuffix}
                     </div>
-
+        
                     <table class="stats-table">
                         <thead>
                             <tr>

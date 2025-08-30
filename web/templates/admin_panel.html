@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Административная панель - {{.region_name}}</title>
+    <link rel="icon" href="/images/djin_logo.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            padding: 6px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            font-size: 13px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .header-title {
+            text-align: center;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 1.3em;
+            padding: 0 60px;
+            color: #333;
+        }
+
+        .logo {
+            height: 50px;
+            width: auto;
+            position: absolute;
+            right: 0;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+            flex: 1;
+        }
+
+        .section-header .btn {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-warning {
+            background: #FF9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #F57C00;
+        }
+
+        .btn-danger {
+            background: #F44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #616161;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .role-admin {
+            background: #FFAB91;
+            color: #BF360C;
+        }
+
+        .role-user {
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Улучшенная адаптивность для планшетов */
+        @media (max-width: 992px) {
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .section-title {
+                text-align: center;
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header-title h1 {
+                font-size: 1.1em;
+                padding: 0 50px;
+            }
+            
+            .logo {
+                height: 40px;
+            }
+            
+            .back-button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .section-header {
+                padding: 15px;
+            }
+            
+            .section-content {
+                padding: 15px;
+            }
+
+            .table {
+                font-size: 11px;
+            }
+
+            .table th,
+            .table td {
+                padding: 6px 3px;
+                word-break: break-word;
+            }
+            
+            .table th:first-child,
+            .table td:first-child {
+                min-width: 80px;
+                max-width: 100px;
+            }
+            
+            .table td:last-child {
+                min-width: 120px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                font-size: 11px;
+                margin-bottom: 3px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                padding: 15px;
+            }
+            
+            .modal-header {
+                margin-bottom: 15px;
+            }
+            
+            .form-group {
+                margin-bottom: 12px;
+            }
+        }
+
+        /* Специальная адаптивность для маленьких экранов (360px) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header-container {
+                margin-bottom: 15px;
+            }
+            
+            .header-title h1 {
+                font-size: 1em;
+                padding: 0 35px;
+            }
+            
+            .logo {
+                height: 35px;
+            }
+            
+            .back-button {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            
+            .section {
+                margin-bottom: 15px;
+            }
+            
+            .section-header {
+                padding: 12px;
+            }
+            
+            .section-content {
+                padding: 12px;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            /* Таблица на маленьких экранах */
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table {
+                font-size: 10px;
+                min-width: 500px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 4px 2px;
+                white-space: nowrap;
+            }
+            
+            .table th:first-child,
+            .table td:first-child {
+                position: sticky;
+                left: 0;
+                background-color: #f8f9fa;
+                min-width: 70px;
+                max-width: 70px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .table td:first-child {
+                background-color: white;
+                border-right: 1px solid #e0e0e0;
+            }
+            
+            .role-badge {
+                padding: 2px 6px;
+                font-size: 9px;
+                border-radius: 8px;
+            }
+            
+            .btn {
+                padding: 6px 8px;
+                font-size: 9px;
+                margin-right: 2px;
+                margin-bottom: 2px;
+                border-radius: 4px;
+            }
+            
+            /* Вертикальное расположение кнопок в ячейке действий */
+            .table td:last-child {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                min-width: 90px;
+            }
+            
+            /* Модальные окна на маленьких экранах */
+            .modal-content {
+                width: 98%;
+                margin: 2% auto;
+                padding: 12px;
+                max-height: 95vh;
+                overflow-y: auto;
+            }
+            
+            .modal-title {
+                font-size: 1.1rem;
+            }
+            
+            .form-control {
+                padding: 8px;
+                font-size: 14px;
+            }
+            
+            .form-label {
+                font-size: 13px;
+            }
+        }
+
+        /* Очень маленькие экраны (360px и меньше) */
+        @media (max-width: 360px) {
+            body {
+                padding: 8px;
+            }
+            
+            .header-title h1 {
+                font-size: 0.9em;
+                padding: 0 30px;
+            }
+            
+            .logo {
+                height: 30px;
+            }
+            
+            .section-header,
+            .section-content {
+                padding: 10px;
+            }
+            
+            .table {
+                min-width: 450px;
+            }
+            
+            .table th:first-child,
+            .table td:first-child {
+                min-width: 60px;
+                max-width: 60px;
+                font-size: 9px;
+            }
+            
+            .btn {
+                font-size: 8px;
+                padding: 4px 6px;
+            }
+            
+            .modal-content {
+                padding: 10px;
+            }
+            
+            .form-control {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <a class="back-button" href="/dashboard">← Назад</a>
+        <div class="header-title">
+            <h1>⚙️ Административная панель</h1>
+        </div>
+        <img alt="Логотип компании" class="logo" src="/images/djin_logo.png"/>
+    </div>
+
+    <div class="container">
+        <!-- Уведомления -->
+        <div class="alerts"></div>
+
+        <!-- Раздел управления пользователями -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">👥 Управление пользователями</h2>
+                <button class="btn btn-success" onclick="openCreateUserModal()">
+                    ➕ Добавить пользователя
+                </button>
+            </div>
+            <div class="section-content">
+                <div class="loading users-loading">Загрузка пользователей...</div>
+                <div class="users-table-container table-responsive" style="display: none;">
+                    <table class="table users-table">
+                        <thead>
+                            <tr>
+                                <th>Имя пользователя</th>
+                                <th>Роль</th>
+                                <th>Регион</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody class="users-tbody">
+                            <!-- Пользователи будут загружены сюда -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания пользователя -->
+    <div class="createUserModal modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Добавить пользователя</h3>
+                <button class="close" onclick="closeModal('createUserModal')">&times;</button>
+            </div>
+            <form class="createUserForm">
+                <div class="form-group">
+                    <label class="form-label">Имя пользователя:</label>
+                    <input type="text" class="form-control createUsername" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль:</label>
+                    <input type="password" class="form-control createPassword" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Роль:</label>
+                    <select class="form-control createRole" required>
+                        <option value="user">Пользователь</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                </div>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('createUserModal')">Отмена</button>
+                    <button type="submit" class="btn btn-success">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования пользователя -->
+    <div class="editUserModal modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Редактировать пользователя</h3>
+                <button class="close" onclick="closeModal('editUserModal')">&times;</button>
+            </div>
+            <form class="editUserForm">
+                <input type="hidden" class="editUserId">
+                <div class="form-group">
+                    <label class="form-label">Имя пользователя:</label>
+                    <input type="text" class="form-control editUsername">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Новый пароль (оставьте пустым, если не меняете):</label>
+                    <input type="password" class="form-control editPassword">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Роль:</label>
+                    <select class="form-control editRole">
+                        <option value="user">Пользователь</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                </div>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editUserModal')">Отмена</button>
+                    <button type="submit" class="btn btn-warning">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let users = [];
+        let currentUser = null;
+
+        // Инициализация страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentUser();
+            loadUsers();
+        });
+
+        // Загрузка текущего пользователя
+        async function loadCurrentUser() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const userData = await response.json();
+                    if (userData.success) {
+                        currentUser = userData;
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке пользователя:', error);
+            }
+        }
+
+        // Загрузка пользователей
+        async function loadUsers() {
+            try {
+                const response = await fetch('/admin/users');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Фильтруем пользователей: только из того же региона и исключаем себя
+                    users = data.users.filter(user => {
+                        return currentUser && 
+                               user.region_id === currentUser.region_id && 
+                               user.id !== currentUser.id;
+                    });
+                    displayUsers();
+                } else {
+                    showAlert('Ошибка загрузки пользователей: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+                showAlert('Ошибка загрузки пользователей', 'danger');
+            } finally {
+                document.querySelector('.users-loading').style.display = 'none';
+                document.querySelector('.users-table-container').style.display = 'block';
+            }
+        }
+
+        // Отображение пользователей в таблице
+        function displayUsers() {
+            const tbody = document.querySelector('.users-tbody');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const roleClass = user.role === 'admin' ? 'role-admin' : 'role-user';
+                const roleText = user.role === 'admin' ? 'Администратор' : 'Пользователь';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td><span class="role-badge ${roleClass}">${roleText}</span></td>
+                        <td>${user.region.name}</td>
+                        <td>
+                            <button class="btn btn-warning" style="margin-right: 5px;" onclick="openEditUserModal(${user.id})">
+                                ✏️ Изменить
+                            </button>
+                            <button class="btn btn-danger" onclick="confirmDeleteUser(${user.id}, '${user.username}')">
+                                🗑️ Удалить
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Открытие модального окна создания пользователя
+        function openCreateUserModal() {
+            document.querySelector('.createUserForm').reset();
+            document.querySelector('.createUserModal').style.display = 'block';
+        }
+
+        // Открытие модального окна редактирования пользователя
+        function openEditUserModal(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+
+            document.querySelector('.editUserId').value = user.id;
+            document.querySelector('.editUsername').value = user.username;
+            document.querySelector('.editPassword').value = '';
+            document.querySelector('.editRole').value = user.role;
+            
+            document.querySelector('.editUserModal').style.display = 'block';
+        }
+
+        // Закрытие модального окна
+        function closeModal(modalClass) {
+            document.querySelector('.' + modalClass).style.display = 'none';
+        }
+
+        // Создание пользователя
+        document.querySelector('.createUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userData = {
+                username: document.querySelector('.createUsername').value,
+                password: document.querySelector('.createPassword').value,
+                role: document.querySelector('.createRole').value,
+                region_id: currentUser ? currentUser.region_id : null
+            };
+
+            try {
+                const response = await fetch('/admin/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Пользователь успешно создан', 'success');
+                    closeModal('createUserModal');
+                    loadUsers();
+                } else {
+                    showAlert('Ошибка создания пользователя: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Ошибка создания пользователя:', error);
+                showAlert('Ошибка создания пользователя', 'danger');
+            }
+        });
+
+        // Редактирование пользователя
+        document.querySelector('.editUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.querySelector('.editUserId').value;
+            const userData = {
+                username: document.querySelector('.editUsername').value,
+                role: document.querySelector('.editRole').value,
+                region_id: currentUser ? currentUser.region_id : null
+            };
+
+            // Добавляем пароль только если он введен
+            const password = document.querySelector('.editPassword').value;
+            if (password) {
+                userData.password = password;
+            }
+
+            try {
+                const response = await fetch(`/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Пользователь успешно обновлен', 'success');
+                    closeModal('editUserModal');
+                    loadUsers();
+                } else {
+                    showAlert('Ошибка обновления пользователя: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления пользователя:', error);
+                showAlert('Ошибка обновления пользователя', 'danger');
+            }
+        });
+
+        // Подтверждение удаления пользователя
+        function confirmDeleteUser(userId, username) {
+            if (confirm(`Вы уверены, что хотите удалить пользователя "${username}"?`)) {
+                deleteUser(userId);
+            }
+        }
+
+        // Удаление пользователя
+        async function deleteUser(userId) {
+            try {
+                const response = await fetch(`/admin/users/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Пользователь успешно удален', 'success');
+                    loadUsers();
+                } else {
+                    showAlert('Ошибка удаления пользователя: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Ошибка удаления пользователя:', error);
+                showAlert('Ошибка удаления пользователя', 'danger');
+            }
+        }
+
+        // Отображение уведомлений
+        function showAlert(message, type) {
+            const alertsContainer = document.querySelector('.alerts');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass}`;
+            alertDiv.textContent = message;
+            
+            alertsContainer.appendChild(alertDiv);
+            
+            // Автоматическое скрытие через 5 секунд
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Закрытие модального окна по клику вне его
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

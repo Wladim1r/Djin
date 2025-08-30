@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ввод статистики</title>
-    <link rel="icon" href="../images/djin_logo.png" type="image/png">
+    <link rel="icon" href="/images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -349,7 +349,7 @@
         <div class="header-title">
             <h4>Ввод данных</h4>
         </div>
-        <img src="../images/djin_logo.png" alt="Логотип компании" class="logo">
+        <img src="/images/djin_logo.png" alt="Логотип компании" class="logo">
     </div>
 
     <div id="messageContainer"></div>
@@ -450,12 +450,12 @@
 
     <script>
         let currentUser = null;
-
+        
         // Загрузка информации о текущем пользователе при загрузке страницы
         document.addEventListener('DOMContentLoaded', async function() {
             await loadCurrentUser();
         });
-
+        
         async function loadCurrentUser() {
             try {
                 const response = await fetch('/auth/me');
@@ -463,19 +463,18 @@
                     const userData = await response.json();
                     if (userData.success) {
                         currentUser = userData;
-                        document.getElementById('userDisplay').textContent = userData.username;
+                        console.log('Пользователь загружен:', userData.username);
                     } else {
-                        document.getElementById('userDisplay').textContent = 'Пользователь не найден';
+                        console.log('Пользователь не найден');
                     }
                 } else {
-                    document.getElementById('userDisplay').textContent = 'Ошибка загрузки';
+                    console.log('Ошибка загрузки пользователя');
                 }
             } catch (error) {
                 console.error('Ошибка при загрузке пользователя:', error);
-                document.getElementById('userDisplay').textContent = 'Ошибка соединения';
             }
         }
-
+        
         document.getElementById('statForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -495,7 +494,7 @@
             // Собираем данные из формы
             const formData = new FormData(this);
             
-            // Подготавливаем объект данных (имя пользователя будет установлено автоматически на сервере)
+            // Подготавливаем объект данных
             const data = {
                 seed_plan: parseFloat(formData.get('seed_plan')) || 0,
                 seed_fact: parseFloat(formData.get('seed_fact')) || 0,
@@ -515,7 +514,7 @@
             };
             
             try {
-                const response = await fetch('http://87.228.103.252:8080/djin/stat', {
+                const response = await fetch('/djin/stat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -554,6 +553,11 @@
         
         function showMessage(text, type, timeout = 0) {
             const messageContainer = document.getElementById('messageContainer');
+            if (!messageContainer) {
+                console.error('Элемент messageContainer не найден');
+                return;
+            }
+            
             messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
             
             // Автоматически скрываем сообщение через указанное время
@@ -566,7 +570,9 @@
         
         function hideMessage() {
             const messageContainer = document.getElementById('messageContainer');
-            messageContainer.innerHTML = '';
+            if (messageContainer) {
+                messageContainer.innerHTML = '';
+            }
         }
     </script>
 </body>

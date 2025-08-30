@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.title}} - {{.region_name}}</title>
-    <link rel="icon" href="../images/djin_logo.png" type="image/png">
+    <link rel="icon" href="/images/djin_logo.png" type="image/png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,7 +19,7 @@
         .header {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 12px 20px;
+            padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
@@ -35,44 +35,54 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            flex-wrap: nowrap;
-            justify-content: center;
         }
 
         .user-badge {
             background: #A5D6A7;
-            padding: 8px 15px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 14px;
             font-weight: bold;
             color: #1B5E20;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            white-space: nowrap;
+        }
+
+        .role-badge {
+            background: #FFE082;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #F57F17;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .role-badge.admin {
+            background: #FFAB91;
+            color: #BF360C;
         }
 
         .region-badge {
             background: #A5D6A7;
-            padding: 8px 15px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 14px;
             font-weight: bold;
             color: #1B5E20;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            white-space: nowrap;
         }
 
         .logout-btn {
             background: #F44336;
             color: white;
             border: none;
-            padding: 8px 18px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            white-space: nowrap;
         }
 
         .logout-btn:hover {
@@ -86,7 +96,7 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            padding: 5px 20px;
+            padding: 10px 20px;
             max-width: 1000px;
             margin: 0 auto;
         }
@@ -95,36 +105,33 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
         }
 
         .smart-logo {
-            height: 70px;
+            height: 120px;
             width: auto;
         }
 
         .welcome-text {
             background: white;
-            padding: 12px;
+            padding: 12px 18px;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 350px;
-            width: 100%;
+            max-width: 200px;
+            width: auto;
         }
 
         .welcome-text h3 {
             color: #333;
             margin: 0;
-            font-size: 1.1em;
+            font-size: 1.2em;
         }
 
         .djin-logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
         }
 
         .djin-logo {
@@ -138,27 +145,31 @@
             flex-direction: column;
             align-items: center;
             flex: 1;
-            justify-content: center;
-            min-height: 200px;
-            gap: 15px;
+            justify-content: space-between;
+            min-height: 250px;
         }
 
         .top-buttons {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 12px;
+            gap: 18px;
             align-items: center;
+            margin-top: 10px;
             margin-bottom: 10px;
         }
 
-        .bottom-button {
-            margin: 5px 0;
+        .bottom-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: auto;
+            margin-bottom: 10px;
         }
 
         .action-button {
-            padding: 15px 25px;
-            font-size: 16px;
+            padding: 24px 36px;
+            font-size: 19px;
             font-weight: bold;
             border: none;
             border-radius: 8px;
@@ -168,7 +179,11 @@
             text-decoration: none;
             display: block;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            min-width: 250px;
+            min-width: 304px;
+        }
+
+        .bottom-buttons {
+            padding: 24px 38px;
         }
 
         .fill-data-btn {
@@ -207,7 +222,7 @@
         .test-button {
             background: linear-gradient(135deg, #607D8B, #455A64);
             color: white;
-            min-width: 250px;
+            min-width: 304px;
         }
 
         .test-button:hover {
@@ -216,41 +231,88 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .admin-button {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            color: white;
+            min-width: 304px;
+        }
+
+        .admin-button:hover {
+            background: linear-gradient(135deg, #7B1FA2, #6A1B9A);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
         .footer {
             text-align: center;
             color: #555555;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             line-height: 1.4;
-            padding: 8px;
+            padding-bottom: 15px;
             margin-top: auto;
         }
 
         @media (max-width: 768px) {
-            .header {
-                padding: 10px 15px;
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+                justify-content: center;
             }
 
             .user-info {
-                gap: 10px;
-            }
-
-            .user-badge, .region-badge {
-                padding: 6px 12px;
-                font-size: 13px;
-            }
-
-            .logout-btn {
-                padding: 6px 14px;
-                font-size: 13px;
+                justify-content: center;
+                flex-wrap: wrap;
             }
 
             .container {
-                padding: 5px 15px;
+                padding: 10px 15px;
             }
 
             .smart-logo {
-                height: 60px;
+                height: 100px;
+            }
+
+            .djin-logo {
+                height: 100px;
+            }
+
+            .welcome-text {
+                max-width: 400px;
+            }
+
+            .action-button {
+                min-width: 264px;
+                max-width: 304px;
+            }
+
+            .test-button, .admin-button {
+                min-width: 284px;
+            }
+
+            .main-content {
+                min-height: 200px;
+            }
+
+            .footer {
+                font-size: 15px;
+                padding: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .user-badge, .role-badge, .region-badge, .logout-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .smart-logo {
+                height: 80px;
             }
 
             .djin-logo {
@@ -258,132 +320,55 @@
             }
 
             .welcome-text {
-                max-width: 300px;
-                padding: 10px;
+                max-width: 320px;
+                padding: 18px 15px;
             }
 
             .welcome-text h3 {
-                font-size: 1em;
+                font-size: 1.3em;
             }
 
             .action-button {
-                min-width: 220px;
-                padding: 12px 20px;
-                font-size: 14px;
+                padding: 17px 22px;
+                font-size: 16px;
+                min-width: 244px;
             }
 
-            .test-button {
-                min-width: 220px;
+            .test-button, .admin-button {
+                min-width: 264px;
+            }
+
+            .top-buttons {
+                gap: 12px;
             }
 
             .main-content {
                 min-height: 180px;
-                gap: 12px;
-            }
-
-            .top-buttons {
-                gap: 10px;
             }
 
             .footer {
-                font-size: 13px;
-                padding: 6px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .user-info {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-            }
-
-            .user-badge, .region-badge, .logout-btn {
-                margin: 2px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 8px 10px;
-            }
-
-            .user-info {
-                width: 100%;
-                gap: 6px;
-            }
-
-            .user-badge, .region-badge {
-                font-size: 12px;
+                font-size: 14px;
                 padding: 5px 10px;
             }
+        }
 
-            .logout-btn {
-                font-size: 12px;
-                padding: 5px 12px;
-            }
-
-            .smart-logo {
-                height: 50px;
-            }
-
-            .djin-logo {
-                height: 80px;
-            }
-
+        @media (max-width: 400px) {
             .welcome-text {
-                max-width: 250px;
-                padding: 8px;
-            }
-
-            .welcome-text h3 {
-                font-size: 0.95em;
+                max-width: 300px;
+                padding: 15px 12px;
             }
 
             .action-button {
-                min-width: 200px;
-                padding: 10px 18px;
-                font-size: 13px;
+                min-width: 224px;
+                font-size: 15px;
             }
 
-            .test-button {
-                min-width: 200px;
-            }
-
-            .main-content {
-                min-height: 160px;
-                gap: 10px;
-            }
-
-            .top-buttons {
-                gap: 8px;
+            .test-button, .admin-button {
+                min-width: 244px;
             }
 
             .footer {
-                font-size: 12px;
-                padding: 5px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .user-info {
-                flex-direction: column;
-                align-items: center;
-                gap: 6px;
-            }
-
-            .user-badge, .region-badge, .logout-btn {
-                width: auto;
-            }
-
-            .action-button {
-                min-width: 180px;
-                padding: 9px 16px;
-                font-size: 12px;
-            }
-
-            .test-button {
-                min-width: 180px;
+                font-size: 13px;
             }
         }
     </style>
@@ -393,6 +378,11 @@
         <div class="header-content">
             <div class="user-info">
                 <div class="user-badge">👤 {{.username}}</div>
+                {{if eq .role "admin"}}
+                <div class="role-badge admin">👑 Администратор</div>
+                {{else}}
+                <div class="role-badge">👨‍💼 Пользователь</div>
+                {{end}}
                 <div class="region-badge">📍 {{.region_name}}</div>
                 <button class="logout-btn" onclick="logout()">Выйти</button>
             </div>
@@ -401,7 +391,7 @@
 
     <div class="container">
         <div class="smart-logo-container">
-            <img src="../images/smart_logo.png" alt="Smart логотип" class="smart-logo">
+            <img src="/images/smart_logo.png" alt="Smart логотип" class="smart-logo">
         </div>
 
         <div class="welcome-text">
@@ -409,26 +399,31 @@
         </div>
 
         <div class="djin-logo-container">
-            <img src="../images/djin_logo.png" alt="Логотип компании" class="djin-logo">
+            <img src="/images/djin_logo.png" alt="Логотип компании" class="djin-logo">
         </div>
 
         <div class="main-content">
             <div class="top-buttons">
-                <a href="/inputStat.html" class="action-button fill-data-btn">
+                <a href="/inputStat" class="action-button fill-data-btn">
                     📝 Заполнить данные
                 </a>
-                <a href="/viewStats.html" class="action-button view-data-btn">
+                <a href="/viewStats" class="action-button view-data-btn">
                     📊 Посмотреть данные
                 </a>
-                <a href="/monthStat.html" class="action-button month-stat-btn">
+                <a href="/monthStat" class="action-button month-stat-btn">
                     📅 Статистика за месяц
                 </a>
             </div>
 
-            <div class="bottom-button">
+            <div class="bottom-buttons">
                 <a href="http://opsz.biz:88/login/" class="action-button test-button" target="_blank">
                     🧠 Пройти тестирование
                 </a>
+                {{if eq .role "admin"}}
+                <a href="/admin/panel" class="action-button admin-button">
+                    ⚙️ Управление пользователями
+                </a>
+                {{end}}
             </div>
         </div>
     </div>

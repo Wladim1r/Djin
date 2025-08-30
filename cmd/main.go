@@ -55,14 +55,27 @@ func main() {
 		Path:     "/",
 		MaxAge:   86400 * 7,
 		HttpOnly: true,
+		Secure:   true,
 	})
 	router.Use(sessions.Sessions("session", store))
 
 	// CORS middleware
 	router.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		origin := c.Request.Header.Get("Origin")
+		if origin == "" {
+			origin = "https://dzhinnkrk.ru"
+		}
+
+		c.Header("Access-Control-Allow-Origin", origin)
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+		c.Header("Access-Control-Allow-Credentials", "true")
+
+		// Добавляем заголовки безопасности
+		c.Header("X-Content-Type-Options", "nosniff")
+		c.Header("X-Frame-Options", "DENY")
+		c.Header("X-XSS-Protection", "1; mode=block")
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
@@ -85,9 +98,23 @@ func main() {
 	svr := &http.Server{
 		Addr:    os.Getenv("SVR_PORT"),
 		Handler: router,
+
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
 
 	go tick.TruncateToTickerMonthlyWithContext(ctx, repo)
+
+	log.Printf("server start on potr %s\n", os.Getenv("SVR_PORT"))
+	log.Printf("database info configuration\n")
+	log.Printf("host %s\nuser %s\npassword %s\nname %s\nport %s\n",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"),
+	)
 
 	go func() {
 		if err := svr.ListenAndServe(); err != nil && err != http.ErrServerClosed {

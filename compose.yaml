@@ -4,7 +4,9 @@ services:
     env_file:
       - .env
     ports:
-      - "8080:8080"
+      - "47291:47291"
+    networks:
+      - app-network
     depends_on:
       db:
         condition: service_healthy
@@ -19,15 +21,27 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_PORT=${DB_PORT}
+#    command: |
+#      postgres 
+#      -c log_statement=all 
+#      -c log_connections=on 
+#      -c log_disconnections=on
+#      -c log_line_prefix='%t [%p] %u@%d: '
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U app_user_2025_secure_dzhinn -d application_db_for_dzhinn"]
+      interval: 30s
       timeout: 5s
       retries: 3
     ports:
-      - "5432:5432"
+      - "127.0.0.1:54322:5432"
+    networks:
+      - app-network
     volumes:
       - postgres-db:/var/lib/postgresql/data
 
 volumes:
   postgres-db:
+
+networks:
+  app-network:
+    driver: bridge

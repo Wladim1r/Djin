@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,6 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+)
+
+// Роли пользователей
+const (
+	RoleUser  = "user"
+	RoleAdmin = "admin"
 )
 
 type Region struct {
@@ -20,6 +28,7 @@ type User struct {
 	ID       uint   `json:"id"               gorm:"primarykey"`
 	Username string `json:"username"         gorm:"not null;unique"`
 	Password string `json:"-"                gorm:"not null"`
+	Role     string `json:"role"             gorm:"not null;default:'user'"`
 	RegionID uint   `json:"region_id"        gorm:"not null"`
 	Region   Region `json:"region,omitempty" gorm:"foreignKey:RegionID"`
 }
@@ -34,8 +43,32 @@ type LoginResponse struct {
 	Message    string `json:"message"`
 	UserID     uint   `json:"user_id,omitempty"`
 	Username   string `json:"username,omitempty"`
+	Role       string `json:"role,omitempty"`
 	RegionID   uint   `json:"region_id,omitempty"`
 	RegionName string `json:"region_name,omitempty"`
+}
+
+// Структуры для управления пользователями
+type CreateUserRequest struct {
+	Username string `json:"username"  binding:"required"`
+	Password string `json:"password"  binding:"required,min=3"`
+	Role     string `json:"role"      binding:"required,oneof=user admin"`
+	RegionID uint   `json:"region_id" binding:"required"`
+}
+
+type UpdateUserRequest struct {
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
+	Role     string `json:"role,omitempty"      binding:"omitempty,oneof=user admin"`
+	RegionID uint   `json:"region_id,omitempty"`
+}
+
+type UserResponse struct {
+	ID       uint   `json:"id"`
+	Username string `json:"username"`
+	Role     string `json:"role"`
+	RegionID uint   `json:"region_id"`
+	Region   Region `json:"region"`
 }
 
 // Сервис авторизации
@@ -71,7 +104,13 @@ func (s *AuthService) Authenticate(username, password string) (*User, error) {
 	return &user, nil
 }
 
-func (s *AuthService) CreateUser(username, password string, regionID uint) (*User, error) {
+func (s *AuthService) CreateUser(username, password, role string, regionID uint) (*User, error) {
+	// Проверяем существование региона
+	var region Region
+	if err := s.db.First(&region, regionID).Error; err != nil {
+		return nil, errors.New("region not found")
+	}
+
 	hashedPassword, err := s.HashPassword(password)
 	if err != nil {
 		return nil, err
@@ -80,6 +119,7 @@ func (s *AuthService) CreateUser(username, password string, regionID uint) (*Use
 	user := User{
 		Username: username,
 		Password: hashedPassword,
+		Role:     role,
 		RegionID: regionID,
 	}
 
@@ -87,10 +127,72 @@ func (s *AuthService) CreateUser(username, password string, regionID uint) (*Use
 	return &user, err
 }
 
+func (s *AuthService) UpdateUser(userID uint, req UpdateUserRequest) (*User, error) {
+	var user User
+	if err := s.db.Preload("Region").First(&user, userID).Error; err != nil {
+		return nil, err
+	}
+
+	// Обновляем только переданные поля
+	updates := make(map[string]interface{})
+
+	if req.Username != "" {
+		updates["username"] = req.Username
+	}
+
+	if req.Password != "" {
+		hashedPassword, err := s.HashPassword(req.Password)
+		if err != nil {
+			return nil, err
+		}
+		updates["password"] = hashedPassword
+	}
+
+	if req.Role != "" {
+		updates["role"] = req.Role
+	}
+
+	if req.RegionID != 0 {
+		// Проверяем существование региона
+		var region Region
+		if err := s.db.First(&region, req.RegionID).Error; err != nil {
+			return nil, errors.New("region not found")
+		}
+		updates["region_id"] = req.RegionID
+	}
+
+	if err := s.db.Model(&user).Updates(updates).Error; err != nil {
+		return nil, err
+	}
+
+	// Перезагружаем пользователя с актуальными данными
+	if err := s.db.Preload("Region").First(&user, userID).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (s *AuthService) DeleteUser(userID uint) error {
+	return s.db.Delete(&User{}, userID).Error
+}
+
+func (s *AuthService) GetAllUsers() ([]User, error) {
+	var users []User
+	err := s.db.Preload("Region").Find(&users).Error
+	return users, err
+}
+
 func (s *AuthService) GetUserByID(id uint) (*User, error) {
 	var user User
 	err := s.db.Preload("Region").First(&user, id).Error
 	return &user, err
+}
+
+func (s *AuthService) GetRegions() ([]Region, error) {
+	var regions []Region
+	err := s.db.Find(&regions).Error
+	return regions, err
 }
 
 // Контроллер авторизации
@@ -140,11 +242,12 @@ func (ac *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[LOGIN] Пользователь %s успешно авторизован", user.Username)
+	log.Printf("[LOGIN] Пользователь %s успешно авторизован с ролью %s", user.Username, user.Role)
 
 	session := sessions.Default(c)
 	session.Set("user_id", user.ID)
 	session.Set("username", user.Username)
+	session.Set("role", user.Role)
 	session.Set("region_id", user.RegionID)
 	session.Set("region_name", user.Region.Name)
 
@@ -157,13 +260,19 @@ func (ac *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[LOGIN] Сессия сохранена для пользователя %s (ID: %d)", user.Username, user.ID)
+	log.Printf(
+		"[LOGIN] Сессия сохранена для пользователя %s (ID: %d, Role: %s)",
+		user.Username,
+		user.ID,
+		user.Role,
+	)
 
 	response := LoginResponse{
 		Success:    true,
 		Message:    "Успешный вход",
 		UserID:     user.ID,
 		Username:   user.Username,
+		Role:       user.Role,
 		RegionID:   user.RegionID,
 		RegionName: user.Region.Name,
 	}
@@ -187,6 +296,7 @@ func (ac *AuthController) GetCurrentUser(c *gin.Context) {
 	session := sessions.Default(c)
 	userID := session.Get("user_id")
 	username := session.Get("username")
+	role := session.Get("role")
 	regionID := session.Get("region_id")
 	regionName := session.Get("region_name")
 
@@ -202,6 +312,189 @@ func (ac *AuthController) GetCurrentUser(c *gin.Context) {
 		"success":     true,
 		"user_id":     userID,
 		"username":    username,
+		"role":        role,
+		"region_id":   regionID,
+		"region_name": regionName,
+	})
+}
+
+// Административные методы
+func (ac *AuthController) CreateUser(c *gin.Context) {
+	var req CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Неверный формат данных",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	user, err := ac.authService.CreateUser(req.Username, req.Password, req.Role, req.RegionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Не удалось создать пользователя",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// Загружаем пользователя с регионом для ответа
+	fullUser, _ := ac.authService.GetUserByID(user.ID)
+
+	c.JSON(http.StatusCreated, gin.H{
+		"success": true,
+		"message": "Пользователь успешно создан",
+		"user": UserResponse{
+			ID:       fullUser.ID,
+			Username: fullUser.Username,
+			Role:     fullUser.Role,
+			RegionID: fullUser.RegionID,
+			Region:   fullUser.Region,
+		},
+	})
+}
+
+func (ac *AuthController) UpdateUser(c *gin.Context) {
+	userID := c.Param("id")
+	var req UpdateUserRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Неверный формат данных",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// Конвертируем строку в uint
+	var id uint
+	if _, err := fmt.Sscanf(userID, "%d", &id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Неверный ID пользователя",
+		})
+		return
+	}
+
+	user, err := ac.authService.UpdateUser(id, req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Не удалось обновить пользователя",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Пользователь успешно обновлен",
+		"user": UserResponse{
+			ID:       user.ID,
+			Username: user.Username,
+			Role:     user.Role,
+			RegionID: user.RegionID,
+			Region:   user.Region,
+		},
+	})
+}
+
+func (ac *AuthController) DeleteUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	var id uint
+	if _, err := fmt.Sscanf(userID, "%d", &id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Неверный ID пользователя",
+		})
+		return
+	}
+
+	if err := ac.authService.DeleteUser(id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Не удалось удалить пользователя",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Пользователь успешно удален",
+	})
+}
+
+func (ac *AuthController) GetAllUsers(c *gin.Context) {
+	users, err := ac.authService.GetAllUsers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Не удалось получить список пользователей",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	var response []UserResponse
+	for _, user := range users {
+		response = append(response, UserResponse{
+			ID:       user.ID,
+			Username: user.Username,
+			Role:     user.Role,
+			RegionID: user.RegionID,
+			Region:   user.Region,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"users":   response,
+	})
+}
+
+func (ac *AuthController) GetRegions(c *gin.Context) {
+	regions, err := ac.authService.GetRegions()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Не удалось получить список регионов",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"regions": regions,
+	})
+}
+
+func (ac *AuthController) GetMe(c *gin.Context) {
+	session := sessions.Default(c)
+	userID := session.Get("user_id")
+	username := session.Get("username")
+	role := session.Get("role")
+	regionID := session.Get("region_id")
+	regionName := session.Get("region_name")
+
+	if userID == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": "Не авторизован",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":     true,
+		"user_id":     userID,
+		"username":    username,
+		"role":        role,
 		"region_id":   regionID,
 		"region_name": regionName,
 	})
@@ -240,9 +533,26 @@ func AuthMiddleware() gin.HandlerFunc {
 		// Добавляем информацию о пользователе в контекст
 		c.Set("user_id", userID)
 		c.Set("username", session.Get("username"))
+		c.Set("role", session.Get("role"))
 		c.Set("region_id", session.Get("region_id"))
 		c.Set("region_name", session.Get("region_name"))
 
+		c.Next()
+	}
+}
+
+// Middleware для проверки роли администратора
+func AdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role := c.GetString("role")
+		if role != RoleAdmin {
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"message": "Доступ запрещен. Требуется роль администратора",
+			})
+			c.Abort()
+			return
+		}
 		c.Next()
 	}
 }
@@ -288,6 +598,19 @@ func GetUserIDFromContext(c *gin.Context) uint {
 	return 0
 }
 
+// Хелпер для получения роли пользователя из контекста
+func GetUserRoleFromContext(c *gin.Context) string {
+	if role, exists := c.Get("role"); exists {
+		return role.(string)
+	}
+	return RoleUser
+}
+
+// Проверка, является ли пользователь администратором
+func IsAdmin(c *gin.Context) bool {
+	return GetUserRoleFromContext(c) == RoleAdmin
+}
+
 // Инициализация регионов и пользователей
 func InitializeRegions(db *gorm.DB) error {
 	authService := NewAuthService(db)
@@ -296,9 +619,8 @@ func InitializeRegions(db *gorm.DB) error {
 	regions := []struct {
 		Name string
 	}{
-		{"Московская область"},
 		{"Санкт-Петербург"},
-		{"Краснодарский край"},
+		{"Тихорецк"},
 	}
 
 	regionMap := make(map[string]uint)
@@ -322,15 +644,18 @@ func InitializeRegions(db *gorm.DB) error {
 	users := []struct {
 		Username   string
 		Password   string
+		Role       string
 		RegionName string
 	}{
-		{"ivan", "123", "Московская область"},
-		{"ivan", "1234", "Санкт-Петербург"},
-		{"anna", "123", "Санкт-Петербург"},
-		{"elena", "123", "Санкт-Петербург"},
-		// Дополнительные пользователи для демонстрации
-		{"admin_msk", "123", "Московская область"},
-		{"man", "123", "Санкт-Петербург"},
+		{"ivan", "123", RoleAdmin, "Санкт-Петербург"},
+		{"anna", "123", RoleUser, "Санкт-Петербург"},
+		{"man", "123", RoleUser, "Санкт-Петербург"},
+
+		{"Дима С", "123", RoleUser, "Тихорецк"},
+		{"Дима Т", "123", RoleUser, "Тихорецк"},
+		{"Боря", "123", RoleUser, "Тихорецк"},
+		{"Даня", "123", RoleUser, "Тихорецк"},
+		{"Андрей", "123", RoleAdmin, "Тихорецк"},
 	}
 
 	for _, u := range users {
@@ -338,7 +663,7 @@ func InitializeRegions(db *gorm.DB) error {
 		if err := db.Where("username = ?", u.Username).First(&existing).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				regionID := regionMap[u.RegionName]
-				_, err := authService.CreateUser(u.Username, u.Password, regionID)
+				_, err := authService.CreateUser(u.Username, u.Password, u.Role, regionID)
 				if err != nil {
 					return err
 				}
@@ -347,28 +672,4 @@ func InitializeRegions(db *gorm.DB) error {
 	}
 
 	return nil
-}
-
-func (ac *AuthController) GetMe(c *gin.Context) {
-	session := sessions.Default(c)
-	userID := session.Get("user_id")
-	username := session.Get("username")
-	regionID := session.Get("region_id")
-	regionName := session.Get("region_name")
-
-	if userID == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": "Не авторизован",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success":     true,
-		"user_id":     userID,
-		"username":    username,
-		"region_id":   regionID,
-		"region_name": regionName,
-	})
 }

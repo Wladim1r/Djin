@@ -5,7 +5,7 @@ type StatDaily struct {
 	Date string `json:"date"         gorm:"type:date;not null;index"`
 
 	Name     string `json:"name"      gorm:"uniqueIndex:idx_region_name"`
-	RegionID uint   `json:"region_id" gorm:"not null;uniqueIndex:idx_region_name"`
+	RegionID uint   `json:"region_id" gorm:"not null;uniqueIndex:idx_region_id"`
 
 	SeedPlan float64 `json:"seed_plan"`
 	SeedFact float64 `json:"seed_fact"`
