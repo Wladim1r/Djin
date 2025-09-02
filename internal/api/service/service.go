@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -64,7 +65,21 @@ func (s *djnService) PatchStat(regionID uint, stat models.StatDaily) error {
 }
 
 func (s *djnService) PostStat(stat models.StatDaily) error {
+	// Проверяем, существует ли уже запись за сегодня для данного пользователя
+	today := time.Now().Format("2006-01-02")
+	existingStats, err := s.repo.GetStatsByMonthAndUser(stat.RegionID, stat.Name, today)
 
+	// Если нашли записи (и это не ошибка "не найдено"), значит дублирование
+	if err == nil && len(existingStats) > 0 {
+		return fmt.Errorf("%w: You have already submitted data for today", errs.ErrUniqueName)
+	}
+
+	// Если это ошибка не "не найдено", то что-то не так с БД
+	if err != nil && !errors.Is(err, errs.ErrNotFound) {
+		return fmt.Errorf("%w: failed to check existing records: %v", errs.ErrDBOperation, err)
+	}
+
+	// Вычисляем разности
 	seedDif := stat.SeedFact - stat.SeedPlan
 	pumpkinDif := stat.PumpkinFact - stat.PumpkinPlan
 	peanutDif := stat.PeanutFact - stat.PeanutPlan

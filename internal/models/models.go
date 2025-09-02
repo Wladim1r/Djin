@@ -2,10 +2,10 @@ package models
 
 type StatDaily struct {
 	ID   uint   `json:"id,omitempty" gorm:"primarykey"`
-	Date string `json:"date"         gorm:"type:date;not null;index"`
+	Date string `json:"date"         gorm:"type:date;not null;uniqueIndex:idx_unique_daily_stat"`
 
-	Name     string `json:"name"`
-	RegionID uint   `json:"region_id"`
+	Name     string `json:"name"      gorm:"uniqueIndex:idx_unique_daily_stat"`
+	RegionID uint   `json:"region_id" gorm:"uniqueIndex:idx_unique_daily_stat"`
 
 	SeedPlan float64 `json:"seed_plan"`
 	SeedFact float64 `json:"seed_fact"`

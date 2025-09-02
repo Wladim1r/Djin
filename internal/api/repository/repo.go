@@ -99,14 +99,17 @@ func (r *djnRepo) PatchStat(regionID uint, stat *models.StatDaily) error {
 func (r *djnRepo) PostStat(stat *models.StatDaily) error {
 	result := r.db.Create(stat)
 	if result.Error != nil {
-		if strings.Contains(result.Error.Error(), "duplicate key") {
-			return fmt.Errorf("%w: %s", errs.ErrUniqueName, result.Error)
+		// Проверяем различные типы ошибок уникальности
+		errorStr := strings.ToLower(result.Error.Error())
+		if strings.Contains(errorStr, "duplicate key") ||
+			strings.Contains(errorStr, "unique constraint") ||
+			strings.Contains(errorStr, "idx_unique_daily_stat") {
+			return fmt.Errorf("%w: %s", errs.ErrUniqueName, "You have already submitted data for today")
 		}
 		return fmt.Errorf("%w: %v", errs.ErrDBOperation, result.Error)
 	}
 
 	summa.AddStatForRegion(stat.RegionID, *stat)
-
 	return nil
 }
 
