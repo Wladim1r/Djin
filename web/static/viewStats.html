@@ -300,7 +300,7 @@
             padding: 15px;
         }
 
-        /* Форма редактирования - ОПТИМИЗИРОВАНА ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
+        /* Форма редактирования - ОПТИМИЗИРОВАНО ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
         .edit-form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -341,7 +341,7 @@
             border-color: #007bff;
         }
 
-        /* Группировка полей - ОПТИМИЗИРОВАНА */
+        /* Группировка полей - ОПТИМИЗИРОВАНО */
         .field-group {
             border: 1px solid #e0e0e0;
             border-radius: 6px;
@@ -681,7 +681,9 @@
     
         async function loadTotalStats() {
             try {
-                const response = await fetch(`${API_BASE_URL}/total`);
+                // ИСПРАВЛЕНО: Добавляем параметр date для получения статистики только за текущий день
+                const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+                const response = await fetch(`${API_BASE_URL}/total?date=${today}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -804,10 +806,6 @@
                                 <td class="peanut-col ${(data.total_peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
                                     ${(data.total_peanut_dif || 0).toFixed(1)}
                                 </td>
-                                <td>${data.total_akb1 || 0}</td>
-                                <td>${data.total_akb2 || 0}</td>
-                                <td>${data.total_newtt || 0}</td>
-                                <td>${data.total_mix || 0}</td>
                                 <td>${data.total_npone || 0}</td>
                                 <td>${data.total_set_shelving || 0}</td>
                                 <td>${data.total_dmp || 0}</td>
