@@ -799,20 +799,20 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="seed-col">${(data.total_seed_plan || 0).toFixed(1)}</td>
-                                <td class="seed-col">${(data.total_seed_fact || 0).toFixed(1)}</td>
+                                <td class="seed-col">${(data.total_seed_plan || 0).toFixed(3)}</td>
+                                <td class="seed-col">${(data.total_seed_fact || 0).toFixed(3)}</td>
                                 <td class="seed-col ${(data.total_seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                                    ${(data.total_seed_dif || 0).toFixed(1)}
+                                    ${(data.total_seed_dif || 0).toFixed(3)}
                                 </td>
-                                <td class="pumpkin-col">${(data.total_pumpkin_plan || 0).toFixed(1)}</td>
-                                <td class="pumpkin-col">${(data.total_pumpkin_fact || 0).toFixed(1)}</td>
+                                <td class="pumpkin-col">${(data.total_pumpkin_plan || 0).toFixed(3)}</td>
+                                <td class="pumpkin-col">${(data.total_pumpkin_fact || 0).toFixed(3)}</td>
                                 <td class="pumpkin-col ${(data.total_pumpkin_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                                    ${(data.total_pumpkin_dif || 0).toFixed(1)}
+                                    ${(data.total_pumpkin_dif || 0).toFixed(3)}
                                 </td>
-                                <td class="peanut-col">${(data.total_peanut_plan || 0).toFixed(1)}</td>
-                                <td class="peanut-col">${(data.total_peanut_fact || 0).toFixed(1)}</td>
+                                <td class="peanut-col">${(data.total_peanut_plan || 0).toFixed(3)}</td>
+                                <td class="peanut-col">${(data.total_peanut_fact || 0).toFixed(3)}</td>
                                 <td class="peanut-col ${(data.total_peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                                    ${(data.total_peanut_dif || 0).toFixed(1)}
+                                    ${(data.total_peanut_dif || 0).toFixed(3)}
                                 </td>
                                 <td>${data.total_akb1 || 0}</td>
                                 <td>${data.total_akb2 || 0}</td>
@@ -931,20 +931,20 @@ N + 1: ${data.total_npone || 0}
                             </button>
                         ` : ''}
                     </td>
-                    <td class="seed-col">${(stat.seed_plan || 0).toFixed(1)}</td>
-                    <td class="seed-col">${(stat.seed_fact || 0).toFixed(1)}</td>
+                    <td class="seed-col">${(stat.seed_plan || 0).toFixed(3)}</td>
+                    <td class="seed-col">${(stat.seed_fact || 0).toFixed(3)}</td>
                     <td class="seed-col ${(stat.seed_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(stat.seed_dif || 0).toFixed(1)}
+                        ${(stat.seed_dif || 0).toFixed(3)}
                     </td>
-                    <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(1)}</td>
-                    <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(1)}</td>
+                    <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(3)}</td>
+                    <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(3)}</td>
                     <td class="pumpkin-col ${(stat.pumpkin_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(stat.pumpkin_dif || 0).toFixed(1)}
+                        ${(stat.pumpkin_dif || 0).toFixed(3)}
                     </td>
-                    <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(1)}</td>
-                    <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(1)}</td>
+                    <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(3)}</td>
+                    <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(3)}</td>
                     <td class="peanut-col ${(stat.peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(stat.peanut_dif || 0).toFixed(1)}
+                        ${(stat.peanut_dif || 0).toFixed(3)}
                     </td>
                     <td>${stat.akb1 || 0}</td>
                     <td>${stat.akb2 || 0}</td>
