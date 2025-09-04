@@ -132,6 +132,29 @@
             border-radius: 4px;
         }
 
+        .fact-button {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 80px;
+            transition: background-color 0.3s;
+        }
+
+        .fact-button:hover {
+            background-color: #0056b3;
+        }
+
+        .fact-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -235,6 +258,102 @@
             border: 1px solid #bee5eb;
         }
 
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content.seed-modal {
+            background-color: #FFE4B2;
+        }
+
+        .modal-content.pumpkin-modal {
+            background-color: #D1FFBD;
+        }
+
+        .modal-content.peanut-modal {
+            background-color: #FFCCCC;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+        }
+
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .modal-table th,
+        .modal-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .modal-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            color: white;
+        }
+
+        .modal-table input {
+            width: 80px;
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-buttons button {
+            width: auto;
+            margin: 0;
+            padding: 8px 16px;
+        }
+
+        .modal-buttons .cancel-btn {
+            background-color: #6c757d;
+        }
+
+        .modal-buttons .cancel-btn:hover {
+            background-color: #5a6268;
+        }
+
         @media (max-width: 600px) {
             .header-title h4 {
                 font-size: 1.1em;
@@ -261,6 +380,11 @@
                 width: 60px;
             }
             
+            .fact-button {
+                min-width: 60px;
+                font-size: 12px;
+            }
+            
             .metric-group input {
                 width: 50px;
             }
@@ -272,6 +396,30 @@
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 2% auto;
+                max-height: 90vh;
+                padding: 15px;
+            }
+
+            .modal-table {
+                font-size: 14px;
+            }
+
+            .modal-table input {
+                width: 60px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+
+            .modal-buttons button {
+                width: 100%;
+                margin: 5px 0;
             }
         }
 
@@ -313,6 +461,12 @@
                 padding: 4px 6px;
             }
             
+            .fact-button {
+                min-width: 50px;
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+            
             .metric-group input {
                 width: 40px;
                 padding: 4px 6px;
@@ -329,6 +483,30 @@
                 min-width: 35px;
                 font-size: 13px;
             }
+
+            .modal-content {
+                padding: 10px;
+            }
+
+            .modal-table {
+                font-size: 12px;
+            }
+
+            .modal-table th,
+            .modal-table td {
+                padding: 4px;
+            }
+
+            .modal-table input {
+                width: 50px;
+                padding: 3px;
+                font-size: 12px;
+            }
+
+            .modal-content h3 {
+                font-size: 16px;
+                margin: 10px 0;
+            }
         }
 
         @media (max-width: 360px) {
@@ -339,6 +517,18 @@
             
             .logo {
                 height: 80px;
+            }
+
+            .modal-table {
+                font-size: 11px;
+            }
+
+            .modal-table input {
+                width: 40px;
+            }
+
+            .modal-content h3 {
+                font-size: 14px;
             }
         }
     </style>
@@ -364,8 +554,10 @@
                     <input type="number" step="0.01" id="seed_plan" name="seed_plan" class="number-input">
                 </div>
                 <div class="input-group">
-                    <label for="seed_fact">Факт:</label>
-                    <input type="number" step="0.01" id="seed_fact" name="seed_fact" class="number-input">
+                    <label>Факт:</label>
+                    <button type="button" class="fact-button" onclick="openModal('seed')">Детали</button>
+                    <span class="fact-value" id="seed_fact_display">0.000</span>
+                    <input type="hidden" id="seed_fact" name="seed_fact">
                 </div>
             </div>
         </div>
@@ -379,8 +571,10 @@
                     <input type="number" step="0.01" id="pumpkin_plan" name="pumpkin_plan" class="number-input">
                 </div>
                 <div class="input-group">
-                    <label for="pumpkin_fact">Факт:</label>
-                    <input type="number" step="0.01" id="pumpkin_fact" name="pumpkin_fact" class="number-input">
+                    <label>Факт:</label>
+                    <button type="button" class="fact-button" onclick="openModal('pumpkin')">Детали</button>
+                    <span class="fact-value" id="pumpkin_fact_display">0.000</span>
+                    <input type="hidden" id="pumpkin_fact" name="pumpkin_fact">
                 </div>
             </div>
         </div>
@@ -394,8 +588,10 @@
                     <input type="number" step="0.01" id="peanut_plan" name="peanut_plan" class="number-input">
                 </div>
                 <div class="input-group">
-                    <label for="peanut_fact">Факт:</label>
-                    <input type="number" step="0.01" id="peanut_fact" name="peanut_fact" class="number-input">
+                    <label>Факт:</label>
+                    <button type="button" class="fact-button" onclick="openModal('peanut')">Детали</button>
+                    <span class="fact-value" id="peanut_fact_display">0.000</span>
+                    <input type="hidden" id="peanut_fact" name="peanut_fact">
                 </div>
             </div>
         </div>
@@ -448,12 +644,115 @@
         <button type="submit" id="submitBtn">Отправить</button>
     </form>
 
+    <!-- Модальные окна -->
+    <div id="seedModal" class="modal">
+        <div class="modal-content seed-modal">
+            <span class="close" onclick="closeModal('seed')">&times;</span>
+            <h3>Семечка - детальный ввод</h3>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>В упаковке</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody id="seedTableBody">
+                    <!-- Будет заполнено JavaScript -->
+                </tbody>
+            </table>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" onclick="closeModal('seed')">Отмена</button>
+                <button type="button" onclick="calculateAndSave('seed')">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pumpkinModal" class="modal">
+        <div class="modal-content pumpkin-modal">
+            <span class="close" onclick="closeModal('pumpkin')">&times;</span>
+            <h3>Тыква - детальный ввод</h3>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>В упаковке</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody id="pumpkinTableBody">
+                    <!-- Будет заполнено JavaScript -->
+                </tbody>
+            </table>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" onclick="closeModal('pumpkin')">Отмена</button>
+                <button type="button" onclick="calculateAndSave('pumpkin')">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="peanutModal" class="modal">
+        <div class="modal-content peanut-modal">
+            <span class="close" onclick="closeModal('peanut')">&times;</span>
+            <h3>Арахис - детальный ввод</h3>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>В упаковке</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody id="peanutTableBody">
+                    <!-- Будет заполнено JavaScript -->
+                </tbody>
+            </table>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" onclick="closeModal('peanut')">Отмена</button>
+                <button type="button" onclick="calculateAndSave('peanut')">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentUser = null;
         
-        // Загрузка информации о текущем пользователе при загрузке страницы
+        // Данные для модальных окон
+        const modalData = {
+            seed: [
+                { name: 'Семечки «Солнечный великан» 100 гр', package: 30 },
+                { name: 'Семечки «Солнечный великан» 200 гр', package: 15 },
+                { name: 'Семечки «Солнечный великан» 300 гр', package: 10 },
+                { name: '«Солнечный великан» ОТБОРНЫЕ 100 гр', package: 30 },
+                { name: '«Солнечный великан» Особо Соленые 100 гр', package: 30 },
+                { name: 'Семечки «Солнечный великан» соль 100 гр', package: 30 },
+                { name: 'Семечки «Солнечный великан» соль 200 гр', package: 15 },
+                { name: 'Семечки «Солнечный великан» соль 300 гр', package: 10 },
+                { name: 'Семечки «Джинн» 100 гр', package: 35 },
+                { name: 'Семечки «Джинн» 250 гр', package: 14 },
+                { name: 'Семечки «Джинн» соль 100 гр', package: 35 },
+                { name: 'ЯДРА подсолнечника «Солн. Великан» 15 гр', package: 10 }
+            ],
+            pumpkin: [
+                { name: 'Семечки «Джинн тыквенные» 100 гр', package: 35 },
+                { name: 'Кукуруза жареная «Сыр и Чили» 35 гр', package: 60 },
+                { name: 'Кукуруза жареная «Барбекю» 35 гр', package: 60 }
+            ],
+            peanut: [
+                { name: 'Арахис соленый «Караван Стандарт» 40 гр', package: 50 },
+                { name: 'Арахис соленый «Караван Стандарт» 90 гр', package: 22 },
+                { name: 'Арахис соленый «Караван Премиум» 50 гр', package: 40 },
+                { name: 'Арахис соленый «Караван Премиум» 90 гр', package: 22 },
+                { name: 'Арахис соленый «Караван Премиум» 150 гр', package: 20 },
+                { name: 'Арахис «ДЖИНН» 80 гр', package: 25 },
+                { name: 'Арахис «ДЖИНН» банка 130 гр', package: 24 }
+            ]
+        };
+        
+        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', async function() {
             await loadCurrentUser();
+            initializeModals();
         });
         
         async function loadCurrentUser() {
@@ -472,6 +771,67 @@
                 }
             } catch (error) {
                 console.error('Ошибка при загрузке пользователя:', error);
+            }
+        }
+        
+        function initializeModals() {
+            // Заполняем таблицы в модальных окнах
+            for (const [category, items] of Object.entries(modalData)) {
+                const tbody = document.getElementById(`${category}TableBody`);
+                tbody.innerHTML = '';
+                
+                items.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.package}</td>
+                        <td><input type="number" min="0" step="1" id="${category}_qty_${index}" class="number-input" value=""></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+        
+        function openModal(category) {
+            document.getElementById(`${category}Modal`).style.display = 'block';
+        }
+        
+        function closeModal(category) {
+            document.getElementById(`${category}Modal`).style.display = 'none';
+        }
+        
+        function calculateAndSave(category) {
+            const items = modalData[category];
+            let totalFact = 0;
+            
+            items.forEach((item, index) => {
+                const qty = parseInt(document.getElementById(`${category}_qty_${index}`).value) || 0;
+                if (qty > 0) {
+                    const result = qty / item.package;
+                    totalFact += result;
+                }
+            });
+            
+            // Округляем до тысячных
+            totalFact = Math.round(totalFact * 1000) / 1000;
+            
+            // Обновляем отображение
+            document.getElementById(`${category}_fact_display`).textContent = totalFact.toFixed(3);
+            document.getElementById(`${category}_fact`).value = totalFact;
+            
+            // Закрываем модальное окно
+            closeModal(category);
+        }
+        
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                const modals = ['seed', 'pumpkin', 'peanut'];
+                modals.forEach(modal => {
+                    if (event.target.id === `${modal}Modal`) {
+                        closeModal(modal);
+                    }
+                });
             }
         }
         
@@ -529,6 +889,24 @@
                     // Очищаем форму после успешной отправки
                     setTimeout(() => {
                         this.reset();
+                        // Сбрасываем значения фактов
+                        document.getElementById('seed_fact_display').textContent = '0.000';
+                        document.getElementById('pumpkin_fact_display').textContent = '0.000';
+                        document.getElementById('peanut_fact_display').textContent = '0.000';
+                        document.getElementById('seed_fact').value = '';
+                        document.getElementById('pumpkin_fact').value = '';
+                        document.getElementById('peanut_fact').value = '';
+                        
+                        // Очищаем все поля количества в модальных окнах
+                        const categories = ['seed', 'pumpkin', 'peanut'];
+                        categories.forEach(category => {
+                            const items = modalData[category];
+                            items.forEach((item, index) => {
+                                const input = document.getElementById(`${category}_qty_${index}`);
+                                if (input) input.value = '';
+                            });
+                        });
+                        
                         hideMessage();
                     }, 1000);
                 } else {

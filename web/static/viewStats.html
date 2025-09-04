@@ -640,12 +640,13 @@
         const API_BASE_URL = '/djin';
         let currentEditingData = null;
         let currentUser = null;
+        let actualReportCount = 0; // Добавлена переменная для хранения актуального количества
 
         // Загрузка информации о текущем пользователе при загрузке страницы
         document.addEventListener('DOMContentLoaded', async function() {
             await loadCurrentUser();
-            loadTotalStats();
-            loadStats();
+            await loadStats(); // Сначала загружаем индивидуальную статистику
+            loadTotalStats(); // Затем общую статистику с учетом актуального количества
 
             document.querySelector('.close').onclick = closeEditModal;
             document.getElementById('cancelEdit').onclick = closeEditModal;
@@ -689,12 +690,14 @@
                 }
                 
                 const data = await response.json();
+                // ИСПРАВЛЕНИЕ: Используем актуальное количество отчетов вместо data.total_reports
+                data.total_reports = actualReportCount;
                 displayTotalStats(data);
             } catch (error) {
                 console.error('Ошибка при загрузке общей статистики:', error);
                 // Отображаем таблицу с нулевыми значениями когда данных нет
                 const emptyData = {
-                    total_reports: 0,
+                    total_reports: actualReportCount, // Используем актуальное количество
                     total_seed_plan: 0,
                     total_seed_fact: 0,
                     total_seed_dif: 0,
@@ -733,6 +736,9 @@
                 
                 const stats = await response.json();
                 
+                // ИСПРАВЛЕНИЕ: Обновляем актуальное количество отчетов
+                actualReportCount = stats.length;
+                
                 // Добавляем вычисление разниц, если их нет от сервера
                 const statsWithDiff = stats.map(stat => ({
                     ...stat,
@@ -744,6 +750,8 @@
                 displayStats(statsWithDiff);
             } catch (error) {
                 console.error('Ошибка при загрузке статистики:', error);
+                // ИСПРАВЛЕНИЕ: Устанавливаем количество отчетов в 0
+                actualReportCount = 0;
                 // Отображаем пустую таблицу вместо сообщения об ошибке
                 displayStats([]);
             } finally {
@@ -806,6 +814,10 @@
                                 <td class="peanut-col ${(data.total_peanut_dif || 0) >= 0 ? 'positive' : 'negative'}">
                                     ${(data.total_peanut_dif || 0).toFixed(1)}
                                 </td>
+                                <td>${data.total_akb1 || 0}</td>
+                                <td>${data.total_akb2 || 0}</td>
+                                <td>${data.total_newtt || 0}</td>
+                                <td>${data.total_mix || 0}</td>
                                 <td>${data.total_npone || 0}</td>
                                 <td>${data.total_set_shelving || 0}</td>
                                 <td>${data.total_dmp || 0}</td>
