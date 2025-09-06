@@ -217,7 +217,7 @@
             background-color: rgba(178, 34, 34, 0.12);
         }
 
-        /* Стили для кнопки редактирования - ОБНОВЛЕНО (квадратный фон) */
+        /* Стили для кнопки редактирования */
         .edit-button {
             background-color: rgba(0, 123, 255, 0.1);
             border: none;
@@ -238,7 +238,7 @@
             background-color: rgba(0, 123, 255, 0.2);
         }
 
-        /* Модальное окно - ОПТИМИЗИРОВАНО ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
+        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -258,7 +258,7 @@
             border: none;
             border-radius: 8px;
             width: 95%;
-            max-width: 800px;
+            max-width: 1000px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
@@ -300,65 +300,235 @@
             padding: 15px;
         }
 
-        /* Форма редактирования - ОПТИМИЗИРОВАНО ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
-        .edit-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
+        /* Секции для каждой категории продуктов */
+        .product-section {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
+        .product-section.seed {
+            border-left: 4px solid #FFA500;
         }
 
-        .form-group label {
-            margin-bottom: 5px;
+        .product-section.pumpkin {
+            border-left: 4px solid #32CD32;
+        }
+
+        .product-section.peanut {
+            border-left: 4px solid #B22222;
+        }
+
+        .product-section.other {
+            border-left: 4px solid #6495ED;
+        }
+
+        .product-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
             font-weight: bold;
             color: #333;
-            font-size: 12px;
+            border-bottom: 1px solid #ddd;
         }
 
-        .form-group input {
+        .product-content {
+            padding: 15px;
+        }
+
+        .fact-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .plan-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .plan-input label {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .plan-input input {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
-            width: 100%;
-            box-sizing: border-box;
-            /* Убираем стрелки для number input */
-            -moz-appearance: textfield;
+            width: 120px;
         }
 
-        .form-group input::-webkit-outer-spin-button,
-        .form-group input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        .fact-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-
-        /* Группировка полей - ОПТИМИЗИРОВАНО */
-        .field-group {
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
-
-        .field-group-title {
+        .fact-controls label {
             font-weight: bold;
-            margin-bottom: 10px;
             color: #333;
-            font-size: 13px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
         }
 
-        /* Кнопки модального окна - ОПТИМИЗИРОВАНЫ */
+        .fact-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fact-button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .fact-button:hover {
+            background-color: #0056b3;
+        }
+
+        .fact-value {
+            font-weight: bold;
+            color: #333;
+            min-width: 80px;
+        }
+
+        /* Сетка для дополнительных метрик */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .metric-item label {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .metric-item input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Детальный ввод - таблицы в модальных окнах */
+        .detail-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .detail-modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .detail-modal-content.seed-modal {
+            background-color: #FFE4B2;
+        }
+
+        .detail-modal-content.pumpkin-modal {
+            background-color: #D1FFBD;
+        }
+
+        .detail-modal-content.peanut-modal {
+            background-color: #FFCCCC;
+        }
+
+        .detail-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .detail-close:hover,
+        .detail-close:focus {
+            color: black;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .detail-table th,
+        .detail-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .detail-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            color: white;
+        }
+
+        .detail-table input {
+            width: 80px;
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .detail-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .detail-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .detail-buttons .save-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .detail-buttons .cancel-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        /* Кнопки основного модального окна */
         .modal-buttons {
             display: flex;
             justify-content: flex-end;
@@ -422,7 +592,28 @@
             font-size: 13px;
         }
 
-        /* Адаптивные стили - ОБНОВЛЕНЫ ДЛЯ ГОРИЗОНТАЛЬНОЙ ОРИЕНТАЦИИ */
+        /* Сообщения об успехе и ошибке */
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        /* Адаптивные стили */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -455,68 +646,44 @@
                 max-width: none;
             }
 
-            /* Оптимизация для горизонтальной ориентации */
-            @media (orientation: landscape) {
-                .edit-form {
-                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                    gap: 10px;
-                }
-                
-                .form-group input {
-                    padding: 6px;
-                    font-size: 13px;
-                }
-                
-                .field-group {
-                    padding: 10px;
-                }
-                
-                .modal-header,
-                .modal-buttons {
-                    padding: 10px;
-                }
-                
-                .btn {
-                    padding: 8px 12px;
-                    font-size: 13px;
-                    min-width: 70px;
-                }
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
-            
-            /* Улучшение для очень узких экранов */
-            @media (max-width: 420px) {
-                .header-title h4 {
-                    font-size: 1em;
-                    padding: 0 40px;
-                }
-                
-                .logo {
-                    height: 35px;
-                }
-                
-                .back-button {
-                    padding: 5px 10px;
-                    font-size: 12px;
-                }
-                
-                .stats-table td:first-child {
-                    min-width: 100px;
-                    max-width: 100px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                
-                .edit-button {
-                    margin-left: 4px;
-                    width: 22px;
-                    height: 22px;
-                    font-size: 12px;
-                }
-                
-                .modal-title {
-                    font-size: 14px;
-                }
+
+            .fact-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
             }
+
+            .fact-display {
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fact-display {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+
+        /* Скрываем стрелочки в number input */
+        .number-input::-webkit-outer-spin-button,
+        .number-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .number-input {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
     </style>
 </head>
@@ -543,91 +710,113 @@
                 <span class="close">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="editForm">
-                    <div class="field-group">
-                        <div class="field-group-title">🌻 Семечка</div>
-                        <div class="edit-form">
-                            <div class="form-group">
-                                <label for="seed_plan">План</label>
-                                <input type="number" id="seed_plan" name="seed_plan" step="0.1" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="seed_fact">Факт</label>
-                                <input type="number" id="seed_fact" name="seed_fact" step="0.1" min="0">
+                <!-- Семечка -->
+                <div class="product-section seed">
+                    <div class="product-header">🌻 Семечка</div>
+                    <div class="product-content">
+                        <div class="plan-input">
+                            <label for="seed_plan">План:</label>
+                            <input type="number" id="seed_plan" name="seed_plan" step="0.001" min="0" class="number-input">
+                        </div>
+                        <div class="fact-section">
+                            <div class="fact-controls">
+                                <label>Факт:</label>
+                                <div class="fact-display">
+                                    <button type="button" class="fact-button" onclick="openDetailModal('seed')">Детали</button>
+                                    <span class="fact-value" id="seed_fact_display">0.000</span>
+                                    <input type="hidden" id="seed_fact" name="seed_fact">
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="field-group">
-                        <div class="field-group-title">🎃 Тыква</div>
-                        <div class="edit-form">
-                            <div class="form-group">
-                                <label for="pumpkin_plan">План</label>
-                                <input type="number" id="pumpkin_plan" name="pumpkin_plan" step="0.1" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="pumpkin_fact">Факт</label>
-                                <input type="number" id="pumpkin_fact" name="pumpkin_fact" step="0.1" min="0">
+                <!-- Тыква -->
+                <div class="product-section pumpkin">
+                    <div class="product-header">🎃 Тыква</div>
+                    <div class="product-content">
+                        <div class="plan-input">
+                            <label for="pumpkin_plan">План:</label>
+                            <input type="number" id="pumpkin_plan" name="pumpkin_plan" step="0.001" min="0" class="number-input">
+                        </div>
+                        <div class="fact-section">
+                            <div class="fact-controls">
+                                <label>Факт:</label>
+                                <div class="fact-display">
+                                    <button type="button" class="fact-button" onclick="openDetailModal('pumpkin')">Детали</button>
+                                    <span class="fact-value" id="pumpkin_fact_display">0.000</span>
+                                    <input type="hidden" id="pumpkin_fact" name="pumpkin_fact">
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="field-group">
-                        <div class="field-group-title">🥜 Арахис</div>
-                        <div class="edit-form">
-                            <div class="form-group">
-                                <label for="peanut_plan">План</label>
-                                <input type="number" id="peanut_plan" name="peanut_plan" step="0.1" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="peanut_fact">Факт</label>
-                                <input type="number" id="peanut_fact" name="peanut_fact" step="0.1" min="0">
+                <!-- Арахис -->
+                <div class="product-section peanut">
+                    <div class="product-header">🥜 Арахис</div>
+                    <div class="product-content">
+                        <div class="plan-input">
+                            <label for="peanut_plan">План:</label>
+                            <input type="number" id="peanut_plan" name="peanut_plan" step="0.001" min="0" class="number-input">
+                        </div>
+                        <div class="fact-section">
+                            <div class="fact-controls">
+                                <label>Факт:</label>
+                                <div class="fact-display">
+                                    <button type="button" class="fact-button" onclick="openDetailModal('peanut')">Детали</button>
+                                    <span class="fact-value" id="peanut_fact_display">0.000</span>
+                                    <input type="hidden" id="peanut_fact" name="peanut_fact">
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="field-group">
-                        <div class="field-group-title">📊 Дополнительные показатели</div>
-                        <div class="edit-form">
-                            <div class="form-group">
-                                <label for="akb1">АКБ1</label>
-                                <input type="number" id="akb1" name="akb1" min="0">
+                <!-- Дополнительные показатели -->
+                <div class="product-section other">
+                    <div class="product-header">📊 Дополнительные показатели</div>
+                    <div class="product-content">
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <label for="akb1">АКБ1:</label>
+                                <input type="number" id="akb1" name="akb1" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="akb2">АКБ2</label>
-                                <input type="number" id="akb2" name="akb2" min="0">
+                            <div class="metric-item">
+                                <label for="akb2">АКБ2:</label>
+                                <input type="number" id="akb2" name="akb2" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="newtt">Новые ТТ</label>
-                                <input type="number" id="newtt" name="newtt" min="0">
+                            <div class="metric-item">
+                                <label for="newtt">Новые ТТ:</label>
+                                <input type="number" id="newtt" name="newtt" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="mix">Микс</label>
-                                <input type="number" id="mix" name="mix" min="0">
+                            <div class="metric-item">
+                                <label for="mix">Микс:</label>
+                                <input type="number" id="mix" name="mix" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="npone">N+1</label>
-                                <input type="number" id="npone" name="npone" min="0">
+                            <div class="metric-item">
+                                <label for="npone">N+1:</label>
+                                <input type="number" id="npone" name="npone" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="set_shelving">Установка стеллажа</label>
-                                <input type="number" id="set_shelving" name="set_shelving" min="0">
+                            <div class="metric-item">
+                                <label for="set_shelving">Установка стеллажа:</label>
+                                <input type="number" id="set_shelving" name="set_shelving" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="dmp">ДМП</label>
-                                <input type="number" id="dmp" name="dmp" min="0">
+                            <div class="metric-item">
+                                <label for="dmp">ДМП:</label>
+                                <input type="number" id="dmp" name="dmp" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="top_five">Топ 5</label>
-                                <input type="number" id="top_five" name="top_five" min="0">
+                            <div class="metric-item">
+                                <label for="top_five">Топ 5:</label>
+                                <input type="number" id="top_five" name="top_five" min="0" class="number-input">
                             </div>
-                            <div class="form-group">
-                                <label for="news">Новинки</label>
-                                <input type="number" id="news" name="news" min="0">
+                            <div class="metric-item">
+                                <label for="news">Новинки:</label>
+                                <input type="number" id="news" name="news" min="0" class="number-input">
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="modal-buttons">
                 <button type="button" class="btn btn-secondary" id="cancelEdit">Отмена</button>
@@ -636,17 +825,120 @@
         </div>
     </div>
 
+    <!-- Детальные модальные окна -->
+    <div id="seedDetailModal" class="detail-modal">
+        <div class="detail-modal-content seed-modal">
+            <span class="detail-close" onclick="closeDetailModal('seed')">&times;</span>
+            <h3>Семечка - детальный ввод</h3>
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>В упаковке</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody id="seedDetailTableBody">
+                    <!-- Будет заполнено JavaScript -->
+                </tbody>
+            </table>
+            <div class="detail-buttons">
+                <button type="button" class="cancel-btn" onclick="closeDetailModal('seed')">Отмена</button>
+                <button type="button" class="save-btn" onclick="calculateAndSaveDetail('seed')">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pumpkinDetailModal" class="detail-modal">
+        <div class="detail-modal-content pumpkin-modal">
+            <span class="detail-close" onclick="closeDetailModal('pumpkin')">&times;</span>
+            <h3>Тыква - детальный ввод</h3>
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>В упаковке</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody id="pumpkinDetailTableBody">
+                    <!-- Будет заполнено JavaScript -->
+                </tbody>
+            </table>
+            <div class="detail-buttons">
+                <button type="button" class="cancel-btn" onclick="closeDetailModal('pumpkin')">Отмена</button>
+                <button type="button" class="save-btn" onclick="calculateAndSaveDetail('pumpkin')">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="peanutDetailModal" class="detail-modal">
+        <div class="detail-modal-content peanut-modal">
+            <span class="detail-close" onclick="closeDetailModal('peanut')">&times;</span>
+            <h3>Арахис - детальный ввод</h3>
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>В упаковке</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody id="peanutDetailTableBody">
+                    <!-- Будет заполнено JavaScript -->
+                </tbody>
+            </table>
+            <div class="detail-buttons">
+                <button type="button" class="cancel-btn" onclick="closeDetailModal('peanut')">Отмена</button>
+                <button type="button" class="save-btn" onclick="calculateAndSaveDetail('peanut')">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE_URL = '/djin';
         let currentEditingData = null;
         let currentUser = null;
-        let actualReportCount = 0; // Добавлена переменная для хранения актуального количества
+        let actualReportCount = 0;
 
-        // Загрузка информации о текущем пользователе при загрузке страницы
+        // Данные для детального ввода (те же, что и в inputStat.html)
+        const modalData = {
+            seed: [
+                { name: 'Семечки «Солнечный великан» 100 гр', package: 30 },
+                { name: 'Семечки «Солнечный великан» 200 гр', package: 15 },
+                { name: 'Семечки «Солнечный великан» 300 гр', package: 10 },
+                { name: '«Солнечный великан» ОТБОРНЫЕ 100 гр', package: 30 },
+                { name: '«Солнечный великан» Особо Соленые 100 гр', package: 30 },
+                { name: 'Семечки «Солнечный великан» соль 100 гр', package: 30 },
+                { name: 'Семечки «Солнечный великан» соль 200 гр', package: 15 },
+                { name: 'Семечки «Солнечный великан» соль 300 гр', package: 10 },
+                { name: 'Семечки «Джинн» 100 гр', package: 35 },
+                { name: 'Семечки «Джинн» 250 гр', package: 14 },
+                { name: 'Семечки «Джинн» соль 100 гр', package: 35 },
+                { name: 'ЯДРА подсолнечника «Солн. Великан» 15 гр', package: 10 }
+            ],
+            pumpkin: [
+                { name: 'Семечки «Джинн тыквенные» 100 гр', package: 35 },
+                { name: 'Кукуруза жареная «Сыр и Чили» 35 гр', package: 60 },
+                { name: 'Кукуруза жареная «Барбекю» 35 гр', package: 60 }
+            ],
+            peanut: [
+                { name: 'Арахис соленый «Караван Стандарт» 40 гр', package: 50 },
+                { name: 'Арахис соленый «Караван Стандарт» 90 гр', package: 22 },
+                { name: 'Арахис соленый «Караван Премиум» 50 гр', package: 40 },
+                { name: 'Арахис соленый «Караван Премиум» 90 гр', package: 22 },
+                { name: 'Арахис соленый «Караван Премиум» 150 гр', package: 20 },
+                { name: 'Арахис «ДЖИНН» 80 гр', package: 25 },
+                { name: 'Арахис «ДЖИНН» банка 130 гр', package: 24 }
+            ]
+        };
+
+        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', async function() {
             await loadCurrentUser();
-            await loadStats(); // Сначала загружаем индивидуальную статистику
-            loadTotalStats(); // Затем общую статистику с учетом актуального количества
+            initializeDetailModals();
+            await loadStats();
+            loadTotalStats();
 
             document.querySelector('.close').onclick = closeEditModal;
             document.getElementById('cancelEdit').onclick = closeEditModal;
@@ -657,14 +949,93 @@
                 if (event.target === modal) {
                     closeEditModal();
                 }
+                
+                // Закрытие детальных модалов
+                const detailModals = ['seedDetailModal', 'pumpkinDetailModal', 'peanutDetailModal'];
+                detailModals.forEach(modalId => {
+                    const detailModal = document.getElementById(modalId);
+                    if (event.target === detailModal) {
+                        const category = modalId.replace('DetailModal', '');
+                        closeDetailModal(category);
+                    }
+                });
             };
 
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
                     closeEditModal();
+                    closeDetailModal('seed');
+                    closeDetailModal('pumpkin');
+                    closeDetailModal('peanut');
                 }
             });
         });
+
+        function initializeDetailModals() {
+            // Заполняем таблицы в детальных модальных окнах
+            for (const [category, items] of Object.entries(modalData)) {
+                const tbody = document.getElementById(`${category}DetailTableBody`);
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    
+                    items.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.name}</td>
+                            <td>${item.package}</td>
+                            <td><input type="number" min="0" step="1" id="${category}_qty_${index}" class="number-input" value=""></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            }
+        }
+
+        function openDetailModal(category) {
+            document.getElementById(`${category}DetailModal`).style.display = 'block';
+        }
+        
+        function closeDetailModal(category) {
+            document.getElementById(`${category}DetailModal`).style.display = 'none';
+        }
+        
+        function calculateAndSaveDetail(category) {
+            const items = modalData[category];
+            let totalFact = 0;
+            
+            items.forEach((item, index) => {
+                const qty = parseInt(document.getElementById(`${category}_qty_${index}`).value) || 0;
+                if (qty > 0) {
+                    let result = qty / item.package;
+                    
+                    // Специальные множители для определенных позиций (как в inputStat.html)
+                    if (category === 'peanut') {
+                        if (item.name === 'Арахис соленый «Караван Премиум» 150 гр') {
+                            result *= 1.5;
+                        } else if (item.name === 'Арахис «ДЖИНН» банка 130 гр') {
+                            result *= 1.6;
+                        }
+                    }
+                    
+                    // Специальный случай для ядер подсолнечника
+                    if (category === 'seed' && item.name === 'ЯДРА подсолнечника «Солн. Великан» 15 гр') {
+                        result = qty / 200; // Используем 200 вместо 10
+                    }
+                    
+                    totalFact += result;
+                }
+            });
+            
+            // Округляем до тысячных
+            totalFact = Math.round(totalFact * 1000) / 1000;
+            
+            // Обновляем отображение
+            document.getElementById(`${category}_fact_display`).textContent = totalFact.toFixed(3);
+            document.getElementById(`${category}_fact`).value = totalFact;
+            
+            // Закрываем детальное модальное окно
+            closeDetailModal(category);
+        }
 
         async function loadCurrentUser() {
             try {
@@ -682,22 +1053,19 @@
     
         async function loadTotalStats() {
             try {
-                // ИСПРАВЛЕНО: Добавляем параметр date для получения статистики только за текущий день
-                const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+                const today = new Date().toISOString().split('T')[0];
                 const response = await fetch(`${API_BASE_URL}/total?date=${today}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                // ИСПРАВЛЕНИЕ: Используем актуальное количество отчетов вместо data.total_reports
                 data.total_reports = actualReportCount;
                 displayTotalStats(data);
             } catch (error) {
                 console.error('Ошибка при загрузке общей статистики:', error);
-                // Отображаем таблицу с нулевыми значениями когда данных нет
                 const emptyData = {
-                    total_reports: actualReportCount, // Используем актуальное количество
+                    total_reports: actualReportCount,
                     total_seed_plan: 0,
                     total_seed_fact: 0,
                     total_seed_dif: 0,
@@ -725,7 +1093,7 @@
     
         async function loadStats() {
             try {
-                const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+                const today = new Date().toISOString().split('T')[0];
                 const response = await fetch(`${API_BASE_URL}/month?date=${today}`);
                 if (!response.ok) {
                     if (response.status === 404) {
@@ -735,11 +1103,8 @@
                 }
                 
                 const stats = await response.json();
-                
-                // ИСПРАВЛЕНИЕ: Обновляем актуальное количество отчетов
                 actualReportCount = stats.length;
                 
-                // Добавляем вычисление разниц, если их нет от сервера
                 const statsWithDiff = stats.map(stat => ({
                     ...stat,
                     seed_dif: (stat.seed_fact || 0) - (stat.seed_plan || 0),
@@ -750,9 +1115,7 @@
                 displayStats(statsWithDiff);
             } catch (error) {
                 console.error('Ошибка при загрузке статистики:', error);
-                // ИСПРАВЛЕНИЕ: Устанавливаем количество отчетов в 0
                 actualReportCount = 0;
-                // Отображаем пустую таблицу вместо сообщения об ошибке
                 displayStats([]);
             } finally {
                 document.getElementById('loadingStats').style.display = 'none';
@@ -829,7 +1192,6 @@
                 </div>
             `;
             
-            // Сохраняем данные для копирования
             window.totalStatsData = data;
         }
     
@@ -911,7 +1273,6 @@ N + 1: ${data.total_npone || 0}
             const container = document.getElementById('statsContainer');
             
             if (!stats || stats.length === 0) {
-                // Показываем только желтую подсказку, таблицу не выводим
                 container.innerHTML = `
                     <div class="stats-table-container">
                         <div class="stats-table-title">👤 Ваши отчеты за сегодня</div>
@@ -960,7 +1321,7 @@ N + 1: ${data.total_npone || 0}
     
             container.innerHTML = `
                 <div class="stats-table-container">
-                    <div class="stats-table-title">👤 Ваши отчеты за сегодня</div>
+                    <div class="stats-table-title">👤 Отчеты за сегодня</div>
                     <table class="stats-table">
                         <thead>
                             <tr>
@@ -1006,12 +1367,10 @@ N + 1: ${data.total_npone || 0}
 
             currentEditingData = { ...stat, index };
 
+            // Заполняем основные поля
             document.getElementById('seed_plan').value = stat.seed_plan || 0;
-            document.getElementById('seed_fact').value = stat.seed_fact || 0;
             document.getElementById('pumpkin_plan').value = stat.pumpkin_plan || 0;
-            document.getElementById('pumpkin_fact').value = stat.pumpkin_fact || 0;
             document.getElementById('peanut_plan').value = stat.peanut_plan || 0;
-            document.getElementById('peanut_fact').value = stat.peanut_fact || 0;
             document.getElementById('akb1').value = stat.akb1 || 0;
             document.getElementById('akb2').value = stat.akb2 || 0;
             document.getElementById('newtt').value = stat.newtt || 0;
@@ -1021,6 +1380,24 @@ N + 1: ${data.total_npone || 0}
             document.getElementById('dmp').value = stat.dmp || 0;
             document.getElementById('top_five').value = stat.top_five || 0;
             document.getElementById('news').value = stat.news || 0;
+
+            // Заполняем факты
+            document.getElementById('seed_fact_display').textContent = (stat.seed_fact || 0).toFixed(3);
+            document.getElementById('seed_fact').value = stat.seed_fact || 0;
+            document.getElementById('pumpkin_fact_display').textContent = (stat.pumpkin_fact || 0).toFixed(3);
+            document.getElementById('pumpkin_fact').value = stat.pumpkin_fact || 0;
+            document.getElementById('peanut_fact_display').textContent = (stat.peanut_fact || 0).toFixed(3);
+            document.getElementById('peanut_fact').value = stat.peanut_fact || 0;
+
+            // Очищаем детальные поля
+            const categories = ['seed', 'pumpkin', 'peanut'];
+            categories.forEach(category => {
+                const items = modalData[category];
+                items.forEach((item, idx) => {
+                    const input = document.getElementById(`${category}_qty_${idx}`);
+                    if (input) input.value = '';
+                });
+            });
 
             document.querySelector('.modal-title').textContent = `Редактирование ваших данных`;
             document.getElementById('editModal').style.display = 'block';
@@ -1036,7 +1413,6 @@ N + 1: ${data.total_npone || 0}
         
             const saveButton = document.getElementById('saveEdit');
             const originalText = saveButton.textContent;
-            const originalColor = saveButton.style.backgroundColor;
             
             saveButton.disabled = true;
             saveButton.textContent = 'Сохранение...';
@@ -1070,36 +1446,301 @@ N + 1: ${data.total_npone || 0}
                     body: JSON.stringify(formData)
                 });
         
+                const result = await response.json();
+        
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-                    throw new Error(errorMessage);
+                    throw new Error(result.error || `HTTP error! status: ${response.status}`);
                 }
         
-                saveButton.textContent = '✅ Сохранено!';
-                saveButton.style.backgroundColor = '#28a745';
-        
-                await Promise.all([loadStats(), loadTotalStats()]);
-        
-                setTimeout(() => {
-                    closeEditModal();
-                }, 1000);
+                if (result.success) {
+                    saveButton.textContent = '✅ Сохранено!';
+                    saveButton.style.backgroundColor = '#28a745';
+                    
+                    setTimeout(() => {
+                        closeEditModal();
+                        loadStats(); // Перезагружаем данные
+                        loadTotalStats(); // Обновляем общую статистику
+                    }, 1000);
+                } else {
+                    throw new Error(result.error || 'Неизвестная ошибка при сохранении');
+                }
         
             } catch (error) {
-                console.error('Ошибка при сохранении данных:', error);
+                console.error('Ошибка при сохранении:', error);
                 
-                saveButton.textContent = '❌ Ошибка';
+                saveButton.textContent = '❌ Ошибка!';
                 saveButton.style.backgroundColor = '#dc3545';
                 
-                alert(`Ошибка при сохранении данных: ${error.message}`);
-                
                 setTimeout(() => {
-                    saveButton.disabled = false;
                     saveButton.textContent = originalText;
-                    saveButton.style.backgroundColor = originalColor || '#007bff';
+                    saveButton.style.backgroundColor = '';
+                    saveButton.disabled = false;
                 }, 3000);
+                
+                // Показать детали ошибки пользователю
+                const errorMessage = error.message || 'Произошла ошибка при сохранении данных';
+                alert(`Ошибка: ${errorMessage}`);
             }
         }
+
+        // Обработчики для валидации ввода
+        document.addEventListener('DOMContentLoaded', function() {
+            // Добавляем валидацию для числовых полей
+            const numberInputs = document.querySelectorAll('.number-input');
+            numberInputs.forEach(input => {
+                input.addEventListener('input', function(e) {
+                    // Убираем отрицательные значения
+                    if (parseFloat(e.target.value) < 0) {
+                        e.target.value = 0;
+                    }
+                });
+            });
+        });
+
+        // Функция для показа уведомлений
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message`;
+            messageDiv.textContent = message;
+            messageDiv.style.position = 'fixed';
+            messageDiv.style.top = '20px';
+            messageDiv.style.right = '20px';
+            messageDiv.style.zIndex = '9999';
+            messageDiv.style.padding = '10px 20px';
+            messageDiv.style.borderRadius = '4px';
+            messageDiv.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+            
+            document.body.appendChild(messageDiv);
+            
+            // Автоматически убираем сообщение через 5 секунд
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 5000);
+        }
+
+        // Функция для проверки подключения к серверу
+        async function checkConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET',
+                    timeout: 5000
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Проблема с подключением к серверу:', error);
+                return false;
+            }
+        }
+
+        // Периодическая проверка подключения
+        setInterval(async () => {
+            const isConnected = await checkConnection();
+            if (!isConnected) {
+                showMessage('Проблемы с подключением к серверу. Проверьте интернет соединение.', 'error');
+            }
+        }, 60000); // Проверяем каждую минуту
+
+        // Обработка ошибок загрузки изображений
+        document.addEventListener('DOMContentLoaded', function() {
+            const logo = document.querySelector('.logo');
+            if (logo) {
+                logo.addEventListener('error', function() {
+                    this.style.display = 'none';
+                });
+            }
+        });
+
+        // Функция для обновления данных без полной перезагрузки
+        async function refreshData() {
+            try {
+                showMessage('Обновление данных...', 'info');
+                await Promise.all([loadStats(), loadTotalStats()]);
+                showMessage('Данные успешно обновлены', 'success');
+            } catch (error) {
+                console.error('Ошибка обновления данных:', error);
+                showMessage('Ошибка при обновлении данных', 'error');
+            }
+        }
+
+        // Добавляем горячие клавиши
+        document.addEventListener('keydown', function(event) {
+            // Ctrl+R или F5 для обновления данных
+            if ((event.ctrlKey && event.key === 'r') || event.key === 'F5') {
+                event.preventDefault();
+                refreshData();
+            }
+        });
+
+        // Функция для форматирования чисел
+        function formatNumber(num, decimals = 3) {
+            if (num === null || num === undefined) return '0.000';
+            return parseFloat(num).toFixed(decimals);
+        }
+
+        // Функция для получения цвета разности
+        function getDifferenceClass(value) {
+            if (value > 0) return 'positive';
+            if (value < 0) return 'negative';
+            return '';
+        }
+
+        // Обработчик для автосохранения при изменении полей
+        let autoSaveTimeout = null;
+        
+        function setupAutoSave() {
+            const inputs = document.querySelectorAll('#editModal input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (autoSaveTimeout) {
+                        clearTimeout(autoSaveTimeout);
+                    }
+                    
+                    // Автосохранение через 3 секунды после последнего изменения
+                    autoSaveTimeout = setTimeout(() => {
+                        if (currentEditingData) {
+                            console.log('Автосохранение...');
+                            // Можно добавить индикатор автосохранения
+                        }
+                    }, 3000);
+                });
+            });
+        }
+
+        // Инициализация автосохранения при открытии модального окна
+        const originalOpenEditModal = openEditModal;
+        window.openEditModal = function(index) {
+            originalOpenEditModal(index);
+            setupAutoSave();
+        };
+
+        // Обработка ошибок JavaScript
+        window.addEventListener('error', function(event) {
+            console.error('JavaScript error:', event.error);
+            showMessage('Произошла ошибка в приложении. Перезагрузите страницу.', 'error');
+        });
+
+        // Обработка необработанных промисов
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            showMessage('Ошибка при выполнении запроса к серверу', 'error');
+        });
+
+        // Проверка поддержки localStorage (если понадобится в будущем)
+        function isLocalStorageSupported() {
+            try {
+                const test = '__localStorage_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Функция для экспорта данных в CSV (если понадобится)
+        function exportToCSV() {
+            if (!window.statsData || window.statsData.length === 0) {
+                showMessage('Нет данных для экспорта', 'error');
+                return;
+            }
+
+            const headers = [
+                'Имя', 'План семечки', 'Факт семечки', 'Разность семечки',
+                'План тыквы', 'Факт тыквы', 'Разность тыквы',
+                'План арахиса', 'Факт арахиса', 'Разность арахиса',
+                'АКБ1', 'АКБ2', 'Новые ТТ', 'Микс', 'N+1',
+                'Уст. стеллажа', 'ДМП', 'Топ 5', 'Новинки'
+            ];
+
+            const csvContent = [headers.join(',')];
+            
+            window.statsData.forEach(stat => {
+                const row = [
+                    `"${stat.name || ''}"`,
+                    formatNumber(stat.seed_plan),
+                    formatNumber(stat.seed_fact),
+                    formatNumber(stat.seed_dif),
+                    formatNumber(stat.pumpkin_plan),
+                    formatNumber(stat.pumpkin_fact),
+                    formatNumber(stat.pumpkin_dif),
+                    formatNumber(stat.peanut_plan),
+                    formatNumber(stat.peanut_fact),
+                    formatNumber(stat.peanut_dif),
+                    stat.akb1 || 0,
+                    stat.akb2 || 0,
+                    stat.newtt || 0,
+                    stat.mix || 0,
+                    stat.npone || 0,
+                    stat.set_shelving || 0,
+                    stat.dmp || 0,
+                    stat.top_five || 0,
+                    stat.news || 0
+                ];
+                csvContent.push(row.join(','));
+            });
+
+            const blob = new Blob([csvContent.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `statistics_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('Данные экспортированы в CSV', 'success');
+        }
+
+        // Функция для печати отчета
+        function printReport() {
+            const printWindow = window.open('', '_blank');
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Статистика - ${new Date().toLocaleDateString('ru-RU')}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                        .positive { color: #28a745; }
+                        .negative { color: #dc3545; }
+                        h1, h2 { color: #333; }
+                        @media print { body { margin: 0; } }
+                    </style>
+                </head>
+                <body>
+                    ${document.getElementById('totalStatsContainer').innerHTML}
+                    ${document.getElementById('statsContainer').innerHTML}
+                    <p style="margin-top: 30px; text-align: center; color: #666; font-size: 12px;">
+                        Отчет создан: ${new Date().toLocaleString('ru-RU')}
+                    </p>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        }
+
+        // Добавляем контекстное меню для дополнительных функций (если понадобится)
+        document.addEventListener('contextmenu', function(event) {
+            // Пока отключено, но можно добавить кастомное контекстное меню
+            // event.preventDefault();
+        });
+
+        console.log('Statistics viewer initialized successfully');
     </script>
 </body>
 </html>

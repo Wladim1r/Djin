@@ -806,7 +806,22 @@
             items.forEach((item, index) => {
                 const qty = parseInt(document.getElementById(`${category}_qty_${index}`).value) || 0;
                 if (qty > 0) {
-                    const result = qty / item.package;
+                    let result = qty / item.package;
+                    
+                    // Специальные множители для определенных позиций
+                    if (category === 'peanut') {
+                        if (item.name === 'Арахис соленый «Караван Премиум» 150 гр') {
+                            result *= 1.5;
+                        } else if (item.name === 'Арахис «ДЖИНН» банка 130 гр') {
+                            result *= 1.6;
+                        }
+                    }
+                    
+                    // Специальный случай для ядер подсолнечника
+                    if (category === 'seed' && item.name === 'ЯДРА подсолнечника «Солн. Великан» 15 гр') {
+                        result = qty / 200; // Используем 200 вместо 10
+                    }
+                    
                     totalFact += result;
                 }
             });
