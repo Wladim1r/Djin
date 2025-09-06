@@ -617,6 +617,7 @@
         @media (max-width: 768px) {
             body {
                 padding: 10px;
+                font-size: 14px;
             }
             
             .header-title h4 {
@@ -663,14 +664,230 @@
         }
 
         @media (max-width: 480px) {
+            body {
+                font-size: 12px;
+                padding: 5px;
+            }
+            
+            .header-container {
+                margin-bottom: 10px;
+            }
+            
+            .back-button {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            
+            .header-title h4 {
+                font-size: 1em;
+                padding: 0 40px;
+            }
+            
+            .logo {
+                height: 30px;
+            }
+            
+            .total-stats-container,
+            .stats-table-container {
+                padding: 8px;
+                margin-bottom: 10px;
+            }
+            
+            .total-stats-header,
+            .stats-table-title {
+                margin-bottom: 10px;
+                padding-bottom: 5px;
+            }
+            
+            .copy-button {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            
+            .total-stats-table,
+            .stats-table {
+                font-size: 9px;
+            }
+            
+            .total-stats-table th,
+            .total-stats-table td,
+            .stats-table th,
+            .stats-table td {
+                padding: 4px 2px;
+            }
+            
             .metrics-grid {
                 grid-template-columns: 1fr;
+                gap: 8px;
             }
-
-            .fact-display {
+            
+            .fact-section {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 10px;
+                gap: 8px;
+            }
+            
+            .fact-button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .plan-input label,
+            .fact-controls label,
+            .metric-item label {
+                font-size: 12px;
+            }
+            
+            .plan-input input,
+            .metric-item input {
+                padding: 6px;
+                font-size: 12px;
+                width: 100px;
+            }
+            
+            .modal-content {
+                width: 100%;
+                margin: 2px auto;
+                border-radius: 4px;
+            }
+            
+            .modal-header {
+                padding: 10px;
+            }
+            
+            .modal-title {
+                font-size: 14px;
+            }
+            
+            .modal-body {
+                padding: 10px;
+            }
+            
+            .product-content {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: 70px;
+            }
+            
+            .detail-modal-content {
+                padding: 15px;
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            .detail-table th,
+            .detail-table td {
+                padding: 6px;
+                font-size: 12px;
+            }
+            
+            .detail-table input {
+                width: 60px;
+                padding: 3px 4px;
+            }
+            
+            .detail-buttons button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            body {
+                font-size: 11px;
+            }
+            
+            .header-title h4 {
+                font-size: 0.9em;
+                padding: 0 35px;
+            }
+            
+            .logo {
+                height: 25px;
+            }
+            
+            .back-button {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+            
+            .total-stats-table,
+            .stats-table {
+                font-size: 8px;
+            }
+            
+            .total-stats-table th,
+            .total-stats-table td,
+            .stats-table th,
+            .stats-table td {
+                padding: 3px 1px;
+            }
+            
+            .copy-button {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+            
+            .fact-button {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+            
+            .plan-input input,
+            .metric-item input {
+                padding: 5px;
+                font-size: 11px;
+                width: 90px;
+            }
+            
+            .modal-title {
+                font-size: 13px;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 11px;
+                min-width: 60px;
+            }
+            
+            .detail-modal-content {
+                padding: 12px;
+            }
+            
+            .detail-table th,
+            .detail-table td {
+                padding: 5px;
+                font-size: 11px;
+            }
+            
+            .detail-table input {
+                width: 50px;
+                padding: 2px 3px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .header-title h4 {
+                font-size: 0.85em;
+                padding: 0 30px;
+            }
+            
+            .logo {
+                height: 22px;
+            }
+            
+            .total-stats-table,
+            .stats-table {
+                font-size: 7px;
+            }
+            
+            .plan-input input,
+            .metric-item input {
+                width: 80px;
             }
         }
 
@@ -1213,9 +1430,9 @@
             
             const text = `ОБЩАЯ СТАТИСТИКА РЕГИОНА за ${displayDate} (Отчетов: ${data.total_reports || 0})
 
-${(data.total_seed_plan || 0).toFixed(1)}/${(data.total_seed_fact || 0).toFixed(1)}/${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(1)}
-${(data.total_pumpkin_plan || 0).toFixed(1)}/${(data.total_pumpkin_fact || 0).toFixed(1)}/${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(1)}
-${(data.total_peanut_plan || 0).toFixed(1)}/${(data.total_peanut_fact || 0).toFixed(1)}/${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(1)}
+${(data.total_seed_plan || 0).toFixed(3)}/${(data.total_seed_fact || 0).toFixed(3)}/${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(3)}
+${(data.total_pumpkin_plan || 0).toFixed(3)}/${(data.total_pumpkin_fact || 0).toFixed(3)}/${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(3)}
+${(data.total_peanut_plan || 0).toFixed(3)}/${(data.total_peanut_fact || 0).toFixed(3)}/${(data.total_peanut_dif || 0) >= 0 ? '+' : ''}${(data.total_peanut_dif || 0).toFixed(3)}
 АКБ: ${totalAkb}
 Новые ТТ: ${data.total_newtt || 0}
 Микс: ${data.total_mix || 0}
@@ -1497,51 +1714,6 @@ N + 1: ${data.total_npone || 0}
             });
         });
 
-        // Функция для показа уведомлений
-        function showMessage(message, type = 'info') {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `${type}-message`;
-            messageDiv.textContent = message;
-            messageDiv.style.position = 'fixed';
-            messageDiv.style.top = '20px';
-            messageDiv.style.right = '20px';
-            messageDiv.style.zIndex = '9999';
-            messageDiv.style.padding = '10px 20px';
-            messageDiv.style.borderRadius = '4px';
-            messageDiv.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
-            
-            document.body.appendChild(messageDiv);
-            
-            // Автоматически убираем сообщение через 5 секунд
-            setTimeout(() => {
-                if (messageDiv.parentNode) {
-                    messageDiv.parentNode.removeChild(messageDiv);
-                }
-            }, 5000);
-        }
-
-        // Функция для проверки подключения к серверу
-        async function checkConnection() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/health`, {
-                    method: 'GET',
-                    timeout: 5000
-                });
-                return response.ok;
-            } catch (error) {
-                console.error('Проблема с подключением к серверу:', error);
-                return false;
-            }
-        }
-
-        // Периодическая проверка подключения
-        setInterval(async () => {
-            const isConnected = await checkConnection();
-            if (!isConnected) {
-                showMessage('Проблемы с подключением к серверу. Проверьте интернет соединение.', 'error');
-            }
-        }, 60000); // Проверяем каждую минуту
-
         // Обработка ошибок загрузки изображений
         document.addEventListener('DOMContentLoaded', function() {
             const logo = document.querySelector('.logo');
@@ -1614,132 +1786,7 @@ N + 1: ${data.total_npone || 0}
             originalOpenEditModal(index);
             setupAutoSave();
         };
-
-        // Обработка ошибок JavaScript
-        window.addEventListener('error', function(event) {
-            console.error('JavaScript error:', event.error);
-            showMessage('Произошла ошибка в приложении. Перезагрузите страницу.', 'error');
-        });
-
-        // Обработка необработанных промисов
-        window.addEventListener('unhandledrejection', function(event) {
-            console.error('Unhandled promise rejection:', event.reason);
-            showMessage('Ошибка при выполнении запроса к серверу', 'error');
-        });
-
-        // Проверка поддержки localStorage (если понадобится в будущем)
-        function isLocalStorageSupported() {
-            try {
-                const test = '__localStorage_test__';
-                localStorage.setItem(test, test);
-                localStorage.removeItem(test);
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        // Функция для экспорта данных в CSV (если понадобится)
-        function exportToCSV() {
-            if (!window.statsData || window.statsData.length === 0) {
-                showMessage('Нет данных для экспорта', 'error');
-                return;
-            }
-
-            const headers = [
-                'Имя', 'План семечки', 'Факт семечки', 'Разность семечки',
-                'План тыквы', 'Факт тыквы', 'Разность тыквы',
-                'План арахиса', 'Факт арахиса', 'Разность арахиса',
-                'АКБ1', 'АКБ2', 'Новые ТТ', 'Микс', 'N+1',
-                'Уст. стеллажа', 'ДМП', 'Топ 5', 'Новинки'
-            ];
-
-            const csvContent = [headers.join(',')];
-            
-            window.statsData.forEach(stat => {
-                const row = [
-                    `"${stat.name || ''}"`,
-                    formatNumber(stat.seed_plan),
-                    formatNumber(stat.seed_fact),
-                    formatNumber(stat.seed_dif),
-                    formatNumber(stat.pumpkin_plan),
-                    formatNumber(stat.pumpkin_fact),
-                    formatNumber(stat.pumpkin_dif),
-                    formatNumber(stat.peanut_plan),
-                    formatNumber(stat.peanut_fact),
-                    formatNumber(stat.peanut_dif),
-                    stat.akb1 || 0,
-                    stat.akb2 || 0,
-                    stat.newtt || 0,
-                    stat.mix || 0,
-                    stat.npone || 0,
-                    stat.set_shelving || 0,
-                    stat.dmp || 0,
-                    stat.top_five || 0,
-                    stat.news || 0
-                ];
-                csvContent.push(row.join(','));
-            });
-
-            const blob = new Blob([csvContent.join('\n')], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', `statistics_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showMessage('Данные экспортированы в CSV', 'success');
-        }
-
-        // Функция для печати отчета
-        function printReport() {
-            const printWindow = window.open('', '_blank');
-            const printContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Статистика - ${new Date().toLocaleDateString('ru-RU')}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-                        th { background-color: #f2f2f2; font-weight: bold; }
-                        .positive { color: #28a745; }
-                        .negative { color: #dc3545; }
-                        h1, h2 { color: #333; }
-                        @media print { body { margin: 0; } }
-                    </style>
-                </head>
-                <body>
-                    ${document.getElementById('totalStatsContainer').innerHTML}
-                    ${document.getElementById('statsContainer').innerHTML}
-                    <p style="margin-top: 30px; text-align: center; color: #666; font-size: 12px;">
-                        Отчет создан: ${new Date().toLocaleString('ru-RU')}
-                    </p>
-                </body>
-                </html>
-            `;
-            
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.focus();
-            
-            setTimeout(() => {
-                printWindow.print();
-            }, 250);
-        }
-
-        // Добавляем контекстное меню для дополнительных функций (если понадобится)
-        document.addEventListener('contextmenu', function(event) {
-            // Пока отключено, но можно добавить кастомное контекстное меню
-            // event.preventDefault();
-        });
-
+        
         console.log('Statistics viewer initialized successfully');
     </script>
 </body>
