@@ -99,6 +99,10 @@ func (r *djnRepo) PatchStat(regionID uint, stat *models.StatDaily) error {
 }
 
 func (r *djnRepo) PostStat(stat *models.StatDaily) error {
+	var oldStat models.StatDaily
+	err := r.db.Where("date = ? AND name = ? AND region_id = ?",
+		stat.Date, stat.Name, stat.RegionID).First(&oldStat).Error
+
 	result := r.db.Clauses(clause.OnConflict{
 		Columns: []clause.Column{{Name: "date"}, {Name: "name"}, {Name: "region_id"}},
 		DoUpdates: clause.AssignmentColumns([]string{
@@ -114,10 +118,14 @@ func (r *djnRepo) PostStat(stat *models.StatDaily) error {
 		return fmt.Errorf("%w: %v", errs.ErrDBOperation, result.Error)
 	}
 
-	// Обновляем агрегированную статистику (пересчёт через summa)
-	// Для простоты можно сначала удалить старое из summa и добавить новое
-	summa.AddStatForRegion(stat.RegionID, *stat)
+	// Если записи не было → просто добавляем
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		summa.AddStatForRegion(stat.RegionID, *stat)
+		return nil
+	}
 
+	// Если запись была → обновляем статистику (вычитаем старую, прибавляем новую)
+	summa.UpdateStatForRegion(stat.RegionID, oldStat, *stat)
 	return nil
 }
 
