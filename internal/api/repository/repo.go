@@ -105,7 +105,7 @@ func (r *djnRepo) PostStat(stat *models.StatDaily) error {
 			"seed_plan", "seed_fact", "seed_dif",
 			"pumpkin_plan", "pumpkin_fact", "pumpkin_dif",
 			"peanut_plan", "peanut_fact", "peanut_dif",
-			"akb1", "akb2", "newtt", "mix", "npone",
+			"akb1", "akb2", "new_tt", "mix", "np_one",
 			"set_shel", "dmp", "top_five", "news",
 		}),
 	}).Create(stat)

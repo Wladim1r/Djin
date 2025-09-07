@@ -21,12 +21,12 @@ type StatDaily struct {
 
 	AKB1    int `json:"akb1,omitempty"`
 	AKB2    int `json:"akb2,omitempty"`
-	NewTT   int `json:"newtt,omitempty"`
+	NewTT   int `json:"newtt,omitempty" gorm:"column:new_tt"`
 	Mix     int `json:"mix,omitempty"`
-	NpOne   int `json:"npone,omitempty"`
-	SetShel int `json:"set_shelving,omitempty"`
+	NpOne   int `json:"npone,omitempty" gorm:"column:np_one"`
+	SetShel int `json:"set_shelving,omitempty" gorm:"column:set_shel"`
 	DMP     int `json:"dmp,omitempty"`
-	TopFive int `json:"top_five,omitempty"`
+	TopFive int `json:"top_five,omitempty" gorm:"column:top_five"`
 	News    int `json:"news,omitempty"`
 }
 
