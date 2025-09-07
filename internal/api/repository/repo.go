@@ -3,13 +3,13 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/Wladim1r/statcounter/internal/lib/errs"
 	"github.com/Wladim1r/statcounter/internal/lib/summa"
 	"github.com/Wladim1r/statcounter/internal/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type DjnRepo interface {
@@ -99,19 +99,25 @@ func (r *djnRepo) PatchStat(regionID uint, stat *models.StatDaily) error {
 }
 
 func (r *djnRepo) PostStat(stat *models.StatDaily) error {
-	result := r.db.Create(stat)
+	result := r.db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "date"}, {Name: "name"}, {Name: "region_id"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"seed_plan", "seed_fact", "seed_dif",
+			"pumpkin_plan", "pumpkin_fact", "pumpkin_dif",
+			"peanut_plan", "peanut_fact", "peanut_dif",
+			"akb1", "akb2", "newtt", "mix", "npone",
+			"set_shel", "dmp", "top_five", "news",
+		}),
+	}).Create(stat)
+
 	if result.Error != nil {
-		// Проверяем различные типы ошибок уникальности
-		errorStr := strings.ToLower(result.Error.Error())
-		if strings.Contains(errorStr, "duplicate key") ||
-			strings.Contains(errorStr, "unique constraint") ||
-			strings.Contains(errorStr, "idx_unique_daily_stat") {
-			return fmt.Errorf("%w: %s", errs.ErrUniqueName, "You have already submitted data for today")
-		}
 		return fmt.Errorf("%w: %v", errs.ErrDBOperation, result.Error)
 	}
 
+	// Обновляем агрегированную статистику (пересчёт через summa)
+	// Для простоты можно сначала удалить старое из summa и добавить новое
 	summa.AddStatForRegion(stat.RegionID, *stat)
+
 	return nil
 }
 

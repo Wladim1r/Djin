@@ -11,7 +11,7 @@ import (
 func TruncateToTickerMonthlyWithContext(ctx context.Context, repo repository.DjnRepo) {
 	// Функция для удаления старых данных
 	deleteOldData := func() {
-		cutoffDate := time.Now().AddDate(0, 0, -3)
+		cutoffDate := time.Now().AddDate(0, 0, -30)
 		if err := repo.DeleteOlderThan(cutoffDate); err != nil {
 			log.Printf("error deleting old data: %v", err)
 		} else {

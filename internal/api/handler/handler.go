@@ -131,7 +131,6 @@ func (h *DjnHandler) PostStat(c *gin.Context) {
 		return
 	}
 
-	// Получаем username из контекста
 	username := c.GetString("username")
 	if username == "" {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
@@ -140,85 +139,28 @@ func (h *DjnHandler) PostStat(c *gin.Context) {
 		return
 	}
 
-	// Создаем структуру для получения данных включая update_existing
-	var requestData struct {
-		models.StatDaily
-		UpdateExisting bool `json:"update_existing"`
-	}
-
-	if err := c.ShouldBindJSON(&requestData); err != nil {
+	var obj models.StatDaily
+	if err := c.ShouldBindJSON(&obj); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Error: "Invalid Body Request",
 		})
 		return
 	}
 
-	// Автоматически устанавливаем имя пользователя из сессии
-	requestData.StatDaily.Name = username
-	requestData.StatDaily.RegionID = regionID
-	requestData.StatDaily.Date = time.Now().Format("2006-01-02")
+	// Проставляем обязательные поля
+	obj.Name = username
+	obj.RegionID = regionID
+	obj.Date = time.Now().Format("2006-01-02")
 
-	// Проверяем, есть ли уже запись за сегодня
-	existingStats, err := h.serv.GetStatsByMonthAndUser(regionID, username, requestData.StatDaily.Date)
-	recordExists := err == nil && len(existingStats) > 0
-
-	if recordExists {
-		// Если запись существует и запрошено обновление
-		if requestData.UpdateExisting {
-			// Обновляем существующую запись
-			if err := h.serv.PatchStat(regionID, requestData.StatDaily); err != nil {
-				switch {
-				case errors.Is(err, errs.ErrNotFound):
-					c.JSON(http.StatusNotFound, models.ErrorResponse{
-						Error: "Record not found",
-					})
-				case errors.Is(err, errs.ErrDBOperation):
-					c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-						Error: "Database operation failed",
-					})
-				default:
-					c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-						Error: "Internal server error",
-					})
-				}
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Data updated successfully",
-				"status":  "success",
-			})
-			return
-		} else {
-			// Если запись существует, но обновление не запрошено
-			c.JSON(http.StatusConflict, models.ErrorResponse{
-				Error: "You have already submitted data for today",
-			})
-			return
-		}
-	}
-
-	// Создаем новую запись
-	if err := h.serv.PostStat(requestData.StatDaily); err != nil {
-		switch {
-		case errors.Is(err, errs.ErrUniqueName):
-			c.JSON(http.StatusConflict, models.ErrorResponse{
-				Error: "You have already submitted data for today",
-			})
-		case errors.Is(err, errs.ErrDBOperation):
-			c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-				Error: "Database operation failed",
-			})
-		default:
-			c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-				Error: "Internal server error",
-			})
-		}
+	if err := h.serv.PostStat(obj); err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Database operation failed",
+		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Data saved successfully",
+		"message": "Data saved/updated successfully",
 		"status":  "success",
 	})
 }
