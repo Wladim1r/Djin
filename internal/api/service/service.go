@@ -17,6 +17,7 @@ type DjnService interface {
 	GetStatByRegionAndUser(regionID uint, username string) ([]models.StatDaily, error)
 	GetStatsByMonth(regionID uint, date string) ([]models.StatDaily, error)
 	GetStatsByMonthAndUser(regionID uint, username string, date string) ([]models.StatDaily, error)
+	CheckExistingRecord(regionID uint, username string, date string) (bool, error)
 }
 
 type djnService struct {
@@ -65,20 +66,6 @@ func (s *djnService) PatchStat(regionID uint, stat models.StatDaily) error {
 }
 
 func (s *djnService) PostStat(stat models.StatDaily) error {
-	// Проверяем, существует ли уже запись за сегодня для данного пользователя
-	today := time.Now().Format("2006-01-02")
-	existingStats, err := s.repo.GetStatsByMonthAndUser(stat.RegionID, stat.Name, today)
-
-	// Если нашли записи (и это не ошибка "не найдено"), значит дублирование
-	if err == nil && len(existingStats) > 0 {
-		return fmt.Errorf("%w: You have already submitted data for today", errs.ErrUniqueName)
-	}
-
-	// Если это ошибка не "не найдено", то что-то не так с БД
-	if err != nil && !errors.Is(err, errs.ErrNotFound) {
-		return fmt.Errorf("%w: failed to check existing records: %v", errs.ErrDBOperation, err)
-	}
-
 	// Вычисляем разности
 	seedDif := stat.SeedFact - stat.SeedPlan
 	pumpkinDif := stat.PumpkinFact - stat.PumpkinPlan
@@ -89,6 +76,18 @@ func (s *djnService) PostStat(stat models.StatDaily) error {
 	stat.PeanutDif = peanutDif
 
 	return s.repo.PostStat(&stat)
+}
+
+// Добавьте новую функцию для проверки существования записи:
+func (s *djnService) CheckExistingRecord(regionID uint, username string, date string) (bool, error) {
+	stats, err := s.repo.GetStatsByMonthAndUser(regionID, username, date)
+	if err != nil {
+		if errors.Is(err, errs.ErrNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return len(stats) > 0, nil
 }
 
 func (s *djnService) GetStatByRegion(regionID uint) ([]models.StatDaily, error) {
