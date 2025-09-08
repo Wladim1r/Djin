@@ -828,7 +828,7 @@
             document.getElementById('seed_plan').value = data.seed_plan || '';
             document.getElementById('pumpkin_plan').value = data.pumpkin_plan || '';
             document.getElementById('peanut_plan').value = data.peanut_plan || '';
-            
+        
             document.getElementById('akb1').value = data.akb1 || '';
             document.getElementById('akb2').value = data.akb2 || '';
             document.getElementById('newtt').value = data.newtt || '';
@@ -838,22 +838,21 @@
             document.getElementById('dmp').value = data.dmp || '';
             document.getElementById('top_five').value = data.top_five || '';
             document.getElementById('news').value = data.news || '';
-            
-            // Заполняем факты и их отображение
-            if (data.seed_fact) {
-                document.getElementById('seed_fact').value = data.seed_fact;
-                document.getElementById('seed_fact_display').textContent = parseFloat(data.seed_fact).toFixed(3);
+        
+            // Факты
+            ['seed','pumpkin','peanut'].forEach(category => {
+                if (data[`${category}_fact`]) {
+                    document.getElementById(`${category}_fact`).value = data[`${category}_fact`];
+                    document.getElementById(`${category}_fact_display`).textContent = parseFloat(data[`${category}_fact`]).toFixed(3);
+                }
+            });
+        
+            // Восстанавливаем модальные данные (если сервер сохраняет их по ключам)
+            if (data.modal_data) {
+                modalCurrentData = data.modal_data;
             }
-            if (data.pumpkin_fact) {
-                document.getElementById('pumpkin_fact').value = data.pumpkin_fact;
-                document.getElementById('pumpkin_fact_display').textContent = parseFloat(data.pumpkin_fact).toFixed(3);
-            }
-            if (data.peanut_fact) {
-                document.getElementById('peanut_fact').value = data.peanut_fact;
-                document.getElementById('peanut_fact_display').textContent = parseFloat(data.peanut_fact).toFixed(3);
-            }
-            
-            // Обновляем текст кнопки отправки
+        
+            // Обновляем текст кнопки
             document.getElementById('submitBtn').textContent = 'Обновить данные';
         }
         
@@ -912,27 +911,34 @@
         function calculateAndSave(category) {
             let total = 0;
             const items = modalData[category];
-            
-            // Сохраняем текущие значения
+        
             modalCurrentData[category] = {};
-            
+        
             items.forEach((item, index) => {
                 const input = document.getElementById(`${category}_item_${index}`);
                 if (input) {
-                    const quantity = parseFloat(input.value) || 0;
-                    modalCurrentData[category][`${category}_item_${index}`] = quantity;
-                    
-                    // Рассчитываем общий вес (количество упаковок * вес одной упаковки / 1000 для перевода в кг)
-                    const packageWeight = getPackageWeight(item.name);
-                    total += quantity * packageWeight / 1000;
+                    const qty = parseFloat(input.value) || 0;
+                    modalCurrentData[category][`${category}_item_${index}`] = qty;
+                    let result = qty / item.package;
+        
+                    // Специальные множители
+                    if (category === 'peanut') {
+                        if (item.name === 'Арахис соленый «Караван Премиум» 150 гр') {
+                            result *= 1.5;
+                        } else if (item.name === 'Арахис «ДЖИНН» банка 130 гр') {
+                            result *= 1.6;
+                        }
+                    }
+                    if (category === 'seed' && item.name === 'ЯДРА подсолнечника «Солн. Великан» 15 гр') {
+                        result = qty / 200; // вместо /10
+                    }
+                    total += result;
                 }
             });
-            
-            // Обновляем отображение и скрытое поле
+        
             document.getElementById(`${category}_fact`).value = total.toFixed(3);
             document.getElementById(`${category}_fact_display`).textContent = total.toFixed(3);
-            
-            // Закрываем модальное окно
+        
             closeModal(category);
         }
         
