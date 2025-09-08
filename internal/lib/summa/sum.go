@@ -31,15 +31,15 @@ func UpdateStatForRegion(regionID uint, oldStat, newStat models.StatDaily) {
 	currentStat := regionalStats.stats[regionID]
 
 	// Вычитаем старые значения
-	currentStat.SeedPlan = roundFloat(currentStat.SeedPlan-oldStat.SeedPlan, 2)
-	currentStat.SeedFact = roundFloat(currentStat.SeedFact-oldStat.SeedFact, 2)
-	currentStat.SeedDif = roundFloat(currentStat.SeedDif-oldStat.SeedDif, 2)
-	currentStat.PumpkinPlan = roundFloat(currentStat.PumpkinPlan-oldStat.PumpkinPlan, 2)
-	currentStat.PumpkinFact = roundFloat(currentStat.PumpkinFact-oldStat.PumpkinFact, 2)
-	currentStat.PumpkinDif = roundFloat(currentStat.PumpkinDif-oldStat.PumpkinDif, 2)
-	currentStat.PeanutPlan = roundFloat(currentStat.PeanutPlan-oldStat.PeanutPlan, 2)
-	currentStat.PeanutFact = roundFloat(currentStat.PeanutFact-oldStat.PeanutFact, 2)
-	currentStat.PeanutDif = roundFloat(currentStat.PeanutDif-oldStat.PeanutDif, 2)
+	currentStat.SeedPlan = roundFloat(currentStat.SeedPlan-oldStat.SeedPlan, 3)
+	currentStat.SeedFact = roundFloat(currentStat.SeedFact-oldStat.SeedFact, 3)
+	currentStat.SeedDif = roundFloat(currentStat.SeedDif-oldStat.SeedDif, 3)
+	currentStat.PumpkinPlan = roundFloat(currentStat.PumpkinPlan-oldStat.PumpkinPlan, 3)
+	currentStat.PumpkinFact = roundFloat(currentStat.PumpkinFact-oldStat.PumpkinFact, 3)
+	currentStat.PumpkinDif = roundFloat(currentStat.PumpkinDif-oldStat.PumpkinDif, 3)
+	currentStat.PeanutPlan = roundFloat(currentStat.PeanutPlan-oldStat.PeanutPlan, 3)
+	currentStat.PeanutFact = roundFloat(currentStat.PeanutFact-oldStat.PeanutFact, 3)
+	currentStat.PeanutDif = roundFloat(currentStat.PeanutDif-oldStat.PeanutDif, 3)
 	currentStat.AKB1 -= oldStat.AKB1
 	currentStat.AKB2 -= oldStat.AKB2
 	currentStat.NewTT -= oldStat.NewTT
@@ -51,15 +51,15 @@ func UpdateStatForRegion(regionID uint, oldStat, newStat models.StatDaily) {
 	currentStat.News -= oldStat.News
 
 	// Добавляем новые значения
-	currentStat.SeedPlan = roundFloat(currentStat.SeedPlan+newStat.SeedPlan, 2)
-	currentStat.SeedFact = roundFloat(currentStat.SeedFact+newStat.SeedFact, 2)
-	currentStat.SeedDif = roundFloat(currentStat.SeedDif+newStat.SeedDif, 2)
-	currentStat.PumpkinPlan = roundFloat(currentStat.PumpkinPlan+newStat.PumpkinPlan, 2)
-	currentStat.PumpkinFact = roundFloat(currentStat.PumpkinFact+newStat.PumpkinFact, 2)
-	currentStat.PumpkinDif = roundFloat(currentStat.PumpkinDif+newStat.PumpkinDif, 2)
-	currentStat.PeanutPlan = roundFloat(currentStat.PeanutPlan+newStat.PeanutPlan, 2)
-	currentStat.PeanutFact = roundFloat(currentStat.PeanutFact+newStat.PeanutFact, 2)
-	currentStat.PeanutDif = roundFloat(currentStat.PeanutDif+newStat.PeanutDif, 2)
+	currentStat.SeedPlan = roundFloat(currentStat.SeedPlan+newStat.SeedPlan, 3)
+	currentStat.SeedFact = roundFloat(currentStat.SeedFact+newStat.SeedFact, 3)
+	currentStat.SeedDif = roundFloat(currentStat.SeedDif+newStat.SeedDif, 3)
+	currentStat.PumpkinPlan = roundFloat(currentStat.PumpkinPlan+newStat.PumpkinPlan, 3)
+	currentStat.PumpkinFact = roundFloat(currentStat.PumpkinFact+newStat.PumpkinFact, 3)
+	currentStat.PumpkinDif = roundFloat(currentStat.PumpkinDif+newStat.PumpkinDif, 3)
+	currentStat.PeanutPlan = roundFloat(currentStat.PeanutPlan+newStat.PeanutPlan, 3)
+	currentStat.PeanutFact = roundFloat(currentStat.PeanutFact+newStat.PeanutFact, 3)
+	currentStat.PeanutDif = roundFloat(currentStat.PeanutDif+newStat.PeanutDif, 3)
 	currentStat.AKB1 += newStat.AKB1
 	currentStat.AKB2 += newStat.AKB2
 	currentStat.NewTT += newStat.NewTT
@@ -83,15 +83,15 @@ func AddStatForRegion(regionID uint, stat models.StatDaily) {
 	currentStat := regionalStats.stats[regionID]
 
 	// Суммируем статистику
-	currentStat.SeedPlan = roundFloat(currentStat.SeedPlan+stat.SeedPlan, 2)
-	currentStat.SeedFact = roundFloat(currentStat.SeedFact+stat.SeedFact, 2)
-	currentStat.SeedDif = roundFloat(currentStat.SeedDif+stat.SeedDif, 2)
-	currentStat.PumpkinPlan = roundFloat(currentStat.PumpkinPlan+stat.PumpkinPlan, 2)
-	currentStat.PumpkinFact = roundFloat(currentStat.PumpkinFact+stat.PumpkinFact, 2)
-	currentStat.PumpkinDif = roundFloat(currentStat.PumpkinDif+stat.PumpkinDif, 2)
-	currentStat.PeanutPlan = roundFloat(currentStat.PeanutPlan+stat.PeanutPlan, 2)
-	currentStat.PeanutFact = roundFloat(currentStat.PeanutFact+stat.PeanutFact, 2)
-	currentStat.PeanutDif = roundFloat(currentStat.PeanutDif+stat.PeanutDif, 2)
+	currentStat.SeedPlan = roundFloat(currentStat.SeedPlan+stat.SeedPlan, 3)
+	currentStat.SeedFact = roundFloat(currentStat.SeedFact+stat.SeedFact, 3)
+	currentStat.SeedDif = roundFloat(currentStat.SeedDif+stat.SeedDif, 3)
+	currentStat.PumpkinPlan = roundFloat(currentStat.PumpkinPlan+stat.PumpkinPlan, 3)
+	currentStat.PumpkinFact = roundFloat(currentStat.PumpkinFact+stat.PumpkinFact, 3)
+	currentStat.PumpkinDif = roundFloat(currentStat.PumpkinDif+stat.PumpkinDif, 3)
+	currentStat.PeanutPlan = roundFloat(currentStat.PeanutPlan+stat.PeanutPlan, 3)
+	currentStat.PeanutFact = roundFloat(currentStat.PeanutFact+stat.PeanutFact, 3)
+	currentStat.PeanutDif = roundFloat(currentStat.PeanutDif+stat.PeanutDif, 3)
 	currentStat.AKB1 += stat.AKB1
 	currentStat.AKB2 += stat.AKB2
 	currentStat.NewTT += stat.NewTT
@@ -125,15 +125,15 @@ func GetTotalStats() (models.StatDaily, int) {
 	totalQuantity := 0
 
 	for _, stat := range regionalStats.stats {
-		totalStat.SeedPlan = roundFloat(totalStat.SeedPlan+stat.SeedPlan, 2)
-		totalStat.SeedFact = roundFloat(totalStat.SeedFact+stat.SeedFact, 2)
-		totalStat.SeedDif = roundFloat(totalStat.SeedDif+stat.SeedDif, 2)
-		totalStat.PumpkinPlan = roundFloat(totalStat.PumpkinPlan+stat.PumpkinPlan, 2)
-		totalStat.PumpkinFact = roundFloat(totalStat.PumpkinFact+stat.PumpkinFact, 2)
-		totalStat.PumpkinDif = roundFloat(totalStat.PumpkinDif+stat.PumpkinDif, 2)
-		totalStat.PeanutPlan = roundFloat(totalStat.PeanutPlan+stat.PeanutPlan, 2)
-		totalStat.PeanutFact = roundFloat(totalStat.PeanutFact+stat.PeanutFact, 2)
-		totalStat.PeanutDif = roundFloat(totalStat.PeanutDif+stat.PeanutDif, 2)
+		totalStat.SeedPlan = roundFloat(totalStat.SeedPlan+stat.SeedPlan, 3)
+		totalStat.SeedFact = roundFloat(totalStat.SeedFact+stat.SeedFact, 3)
+		totalStat.SeedDif = roundFloat(totalStat.SeedDif+stat.SeedDif, 3)
+		totalStat.PumpkinPlan = roundFloat(totalStat.PumpkinPlan+stat.PumpkinPlan, 3)
+		totalStat.PumpkinFact = roundFloat(totalStat.PumpkinFact+stat.PumpkinFact, 3)
+		totalStat.PumpkinDif = roundFloat(totalStat.PumpkinDif+stat.PumpkinDif, 3)
+		totalStat.PeanutPlan = roundFloat(totalStat.PeanutPlan+stat.PeanutPlan, 3)
+		totalStat.PeanutFact = roundFloat(totalStat.PeanutFact+stat.PeanutFact, 3)
+		totalStat.PeanutDif = roundFloat(totalStat.PeanutDif+stat.PeanutDif, 3)
 		totalStat.AKB1 += stat.AKB1
 		totalStat.AKB2 += stat.AKB2
 		totalStat.NewTT += stat.NewTT
