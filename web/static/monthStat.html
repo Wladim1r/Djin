@@ -789,20 +789,20 @@
                 tableRows += `
                     <tr>
                         <td>${stat.name || 'Без названия'}</td>
-                        <td class="seed-col">${(stat.seed_plan || 0).toFixed(3)}</td>
-                        <td class="seed-col">${(stat.seed_fact || 0).toFixed(3)}</td>
+                        <td class="seed-col">${(stat.seed_plan || 0).toFixed(1)}</td>
+                        <td class="seed-col">${(stat.seed_fact || 0).toFixed(1)}</td>
                         <td class="seed-col ${seedDif >= 0 ? 'positive' : 'negative'}">
-                            ${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(3)}
+                            ${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(1)}
                         </td>
-                        <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(3)}</td>
-                        <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(3)}</td>
+                        <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(1)}</td>
+                        <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(1)}</td>
                         <td class="pumpkin-col ${pumpkinDif >= 0 ? 'positive' : 'negative'}">
-                            ${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(3)}
+                            ${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(1)}
                         </td>
-                        <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(3)}</td>
-                        <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(3)}</td>
+                        <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(1)}</td>
+                        <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(1)}</td>
                         <td class="peanut-col ${peanutDif >= 0 ? 'positive' : 'negative'}">
-                            ${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(3)}
+                            ${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(1)}
                         </td>
                         <td>${stat.akb1 || 0}</td>
                         <td>${stat.akb2 || 0}</td>
