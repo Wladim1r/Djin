@@ -263,6 +263,16 @@
             border: 1px solid #bee5eb;
         }
 
+        .preloaded-indicator {
+            background-color: #e8f5e8;
+            border-left: 4px solid #28a745;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #155724;
+        }
+
         /* Модальное окно */
         .modal {
             display: none;
@@ -802,7 +812,7 @@
                     const stats = await response.json();
                     
                     // Фильтруем данные по текущему пользователю
-                    const userStats = stats.filter(stat => stat.username === currentUser.username);
+                    const userStats = stats.filter(stat => stat.name === currentUser.username);
                     
                     if (userStats.length > 0) {
                         // Берем первую (и единственную) запись пользователя
@@ -812,8 +822,11 @@
                         // Заполняем форму существующими данными
                         fillFormWithExistingData(existingReportData);
                         
-                        // Показываем информационное сообщение
-                        showMessage('Загружены ваши предыдущие данные за сегодня. При отправке они будут обновлены.', 'info', 5000);
+                        // Показываем информационное сообщение с кнопкой очистки
+                        showPreloadMessage();
+                    } else {
+                        // Показываем сообщение о том, что это новый отчет
+                        showMessage('Новый отчет за сегодня. Заполните данные и отправьте.', 'info', 3000);
                     }
                 }
             } catch (error) {
@@ -824,11 +837,12 @@
         
         // Заполнение формы существующими данными
         function fillFormWithExistingData(data) {
-            // Заполняем основные поля
+            // Заполняем основные поля планов
             document.getElementById('seed_plan').value = data.seed_plan || '';
             document.getElementById('pumpkin_plan').value = data.pumpkin_plan || '';
             document.getElementById('peanut_plan').value = data.peanut_plan || '';
         
+            // Заполняем дополнительные метрики
             document.getElementById('akb1').value = data.akb1 || '';
             document.getElementById('akb2').value = data.akb2 || '';
             document.getElementById('newtt').value = data.newtt || '';
@@ -839,7 +853,7 @@
             document.getElementById('top_five').value = data.top_five || '';
             document.getElementById('news').value = data.news || '';
         
-            // Факты
+            // Заполняем факты и отображаем их
             ['seed','pumpkin','peanut'].forEach(category => {
                 if (data[`${category}_fact`]) {
                     document.getElementById(`${category}_fact`).value = data[`${category}_fact`];
@@ -847,13 +861,122 @@
                 }
             });
         
-            // Восстанавливаем модальные данные (если сервер сохраняет их по ключам)
-            if (data.modal_data) {
-                modalCurrentData = data.modal_data;
-            }
+            // Восстанавливаем модальные данные из localStorage или из данных сервера
+            restoreModalData();
         
             // Обновляем текст кнопки
             document.getElementById('submitBtn').textContent = 'Обновить данные';
+            
+            // Добавляем визуальный индикатор предзагруженных данных
+            addPreloadIndicator();
+        }
+        
+        // Восстановление модальных данных
+        function restoreModalData() {
+            const today = new Date().toISOString().split('T')[0];
+            const storageKey = `modal_data_${currentUser.username}_${today}`;
+            
+            try {
+                const savedData = localStorage.getItem(storageKey);
+                if (savedData) {
+                    modalCurrentData = JSON.parse(savedData);
+                    console.log('Восстановлены модальные данные из localStorage');
+                }
+            } catch (error) {
+                console.error('Ошибка при восстановлении модальных данных:', error);
+            }
+        }
+        
+        // Сохранение модальных данных
+        function saveModalData() {
+            const today = new Date().toISOString().split('T')[0];
+            const storageKey = `modal_data_${currentUser.username}_${today}`;
+            
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(modalCurrentData));
+                console.log('Модальные данные сохранены в localStorage');
+            } catch (error) {
+                console.error('Ошибка при сохранении модальных данных:', error);
+            }
+        }
+        
+        // Показать сообщение о предзагруженных данных с кнопкой очистки
+        function showPreloadMessage() {
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.innerHTML = `
+                <div class="message info">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Загружены ваши предыдущие данные за сегодня. При отправке они будут обновлены.</span>
+                        <button type="button" onclick="clearFormAndStartFresh()" 
+                                style="margin-left: 15px; padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                            Начать заново
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Автоматически скрываем сообщение через 8 секунд
+            setTimeout(() => {
+                hideMessage();
+            }, 8000);
+        }
+        
+        // Очистка формы и начало заново
+        function clearFormAndStartFresh() {
+            // Очищаем все поля формы
+            document.getElementById('statForm').reset();
+            
+            // Сбрасываем факты
+            ['seed','pumpkin','peanut'].forEach(category => {
+                document.getElementById(`${category}_fact`).value = '';
+                document.getElementById(`${category}_fact_display`).textContent = '0.000';
+            });
+            
+            // Очищаем модальные данные
+            modalCurrentData = { seed: {}, pumpkin: {}, peanut: {} };
+            
+            // Очищаем localStorage
+            const today = new Date().toISOString().split('T')[0];
+            const storageKey = `modal_data_${currentUser.username}_${today}`;
+            localStorage.removeItem(storageKey);
+            
+            // Сбрасываем флаги
+            isUpdatingExistingReport = false;
+            existingReportData = null;
+            
+            // Обновляем кнопку
+            document.getElementById('submitBtn').textContent = 'Отправить';
+            
+            // Удаляем индикатор предзагруженных данных
+            removePreloadIndicator();
+            
+            // Показываем сообщение
+            showMessage('Форма очищена. Можете заполнить данные заново.', 'success', 3000);
+        }
+        
+        // Добавление визуального индикатора предзагруженных данных
+        function addPreloadIndicator() {
+            // Проверяем, не добавлен ли уже индикатор
+            if (document.getElementById('preloadIndicator')) {
+                return;
+            }
+            
+            const indicator = document.createElement('div');
+            indicator.id = 'preloadIndicator';
+            indicator.className = 'preloaded-indicator';
+            indicator.innerHTML = '📋 Данные предзагружены из предыдущего отчета';
+            
+            // Вставляем индикатор после заголовка
+            const headerContainer = document.querySelector('.header-container');
+            headerContainer.insertAdjacentElement('afterend', indicator);
+        }
+        
+        // Удаление визуального индикатора предзагруженных данных
+        function removePreloadIndicator() {
+            const indicator = document.getElementById('preloadIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
         
         function initializeModals() {
@@ -895,6 +1018,17 @@
                             input.value = modalCurrentData[category][key];
                         }
                     });
+                } else {
+                    // Если нет сохраненных данных, пытаемся восстановить из localStorage
+                    restoreModalData();
+                    if (modalCurrentData[category]) {
+                        Object.keys(modalCurrentData[category]).forEach(key => {
+                            const input = document.getElementById(key);
+                            if (input) {
+                                input.value = modalCurrentData[category][key];
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -938,6 +1072,9 @@
         
             document.getElementById(`${category}_fact`).value = total.toFixed(3);
             document.getElementById(`${category}_fact_display`).textContent = total.toFixed(3);
+            
+            // Сохраняем модальные данные в localStorage
+            saveModalData();
         
             closeModal(category);
         }
@@ -986,7 +1123,8 @@
                 set_shelving: parseInt(formData.get('set_shelving')) || 0,
                 dmp: parseInt(formData.get('dmp')) || 0,
                 top_five: parseInt(formData.get('top_five')) || 0,
-                news: parseInt(formData.get('news')) || 0
+                news: parseInt(formData.get('news')) || 0,
+                modal_data: modalCurrentData // Добавляем модальные данные
             };
             
             // Если это обновление, добавляем параметр для перезаписи
@@ -1013,10 +1151,15 @@
                         // При первой отправке переключаем в режим обновления
                         isUpdatingExistingReport = true;
                         document.getElementById('submitBtn').textContent = 'Обновить данные';
+                        // Добавляем индикатор предзагруженных данных
+                        addPreloadIndicator();
                     }
                     
                     // Сохраняем текущие данные как существующие
                     existingReportData = { ...data, username: currentUser.username };
+                    
+                    // Сохраняем модальные данные в localStorage для будущих сессий
+                    saveModalData();
                     
                     // Скрываем сообщение через 3 секунды
                     setTimeout(() => {
