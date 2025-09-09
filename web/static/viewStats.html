@@ -606,7 +606,7 @@
                 weekday: 'long'
             });
             
-            const text = `ОБЩАЯ СТАТИСТИКА РЕГИОНА за ${displayDate} (Отчетов: ${data.total_reports || 0})
+            const text = `г.Тихорецк Краснодарский край\nОБЩИЕ ДАННЫЕ за ${displayDate} (Отчетов: ${data.total_reports || 0})
 
 ${(data.total_seed_plan || 0).toFixed(3)}/${(data.total_seed_fact || 0).toFixed(3)}/${(data.total_seed_dif || 0) >= 0 ? '+' : ''}${(data.total_seed_dif || 0).toFixed(3)}
 ${(data.total_pumpkin_plan || 0).toFixed(3)}/${(data.total_pumpkin_fact || 0).toFixed(3)}/${(data.total_pumpkin_dif || 0) >= 0 ? '+' : ''}${(data.total_pumpkin_dif || 0).toFixed(3)}

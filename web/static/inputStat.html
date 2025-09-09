@@ -263,16 +263,6 @@
             border: 1px solid #bee5eb;
         }
 
-        .preloaded-indicator {
-            background-color: #e8f5e8;
-            border-left: 4px solid #28a745;
-            padding: 8px 12px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #155724;
-        }
-
         /* Модальное окно */
         .modal {
             display: none;
@@ -866,9 +856,6 @@
         
             // Обновляем текст кнопки
             document.getElementById('submitBtn').textContent = 'Обновить данные';
-            
-            // Добавляем визуальный индикатор предзагруженных данных
-            addPreloadIndicator();
         }
         
         // Восстановление модальных данных
@@ -947,36 +934,10 @@
             // Обновляем кнопку
             document.getElementById('submitBtn').textContent = 'Отправить';
             
-            // Удаляем индикатор предзагруженных данных
-            removePreloadIndicator();
+            
             
             // Показываем сообщение
             showMessage('Форма очищена. Можете заполнить данные заново.', 'success', 3000);
-        }
-        
-        // Добавление визуального индикатора предзагруженных данных
-        function addPreloadIndicator() {
-            // Проверяем, не добавлен ли уже индикатор
-            if (document.getElementById('preloadIndicator')) {
-                return;
-            }
-            
-            const indicator = document.createElement('div');
-            indicator.id = 'preloadIndicator';
-            indicator.className = 'preloaded-indicator';
-            indicator.innerHTML = '📋 Данные предзагружены из предыдущего отчета';
-            
-            // Вставляем индикатор после заголовка
-            const headerContainer = document.querySelector('.header-container');
-            headerContainer.insertAdjacentElement('afterend', indicator);
-        }
-        
-        // Удаление визуального индикатора предзагруженных данных
-        function removePreloadIndicator() {
-            const indicator = document.getElementById('preloadIndicator');
-            if (indicator) {
-                indicator.remove();
-            }
         }
         
         function initializeModals() {
@@ -995,7 +956,7 @@
                             <input type="number" 
                                    id="${category}_item_${index}" 
                                    min="0" 
-                                   value="0" 
+                                   value="" 
                                    class="number-input">
                         </td>
                     `;
@@ -1151,8 +1112,6 @@
                         // При первой отправке переключаем в режим обновления
                         isUpdatingExistingReport = true;
                         document.getElementById('submitBtn').textContent = 'Обновить данные';
-                        // Добавляем индикатор предзагруженных данных
-                        addPreloadIndicator();
                     }
                     
                     // Сохраняем текущие данные как существующие
