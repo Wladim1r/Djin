@@ -767,27 +767,62 @@
                     weekday: 'long'
                 });
 
-                let text = `г.Тихорецк Краснодарский край\n${onlyUser ? 'МОИ ДАННЫЕ' : 'ДАННЫЕ ПО РЕГИОНУ'} за ${formattedDate} (Отчетов: ${stats.length})\n\n`;
+                // Вычисляем общие суммы
+                let totals = {
+                    seed_plan: 0,
+                    seed_fact: 0,
+                    pumpkin_plan: 0,
+                    pumpkin_fact: 0,
+                    peanut_plan: 0,
+                    peanut_fact: 0,
+                    akb1: 0,
+                    akb2: 0,
+                    newtt: 0,
+                    mix: 0,
+                    npone: 0,
+                    set_shelving: 0,
+                    dmp: 0,
+                    top_five: 0,
+                    news: 0
+                };
 
                 stats.forEach(stat => {
-                    const seedDif = (stat.seed_fact || 0) - (stat.seed_plan || 0);
-                    const pumpkinDif = (stat.pumpkin_fact || 0) - (stat.pumpkin_plan || 0);
-                    const peanutDif = (stat.peanut_fact || 0) - (stat.peanut_plan || 0);
-                    const totalAkb = (stat.akb1 || 0) + (stat.akb2 || 0);
-
-                    text += `${stat.name || 'Без названия'}:\n`;
-                    text += `${(stat.seed_plan || 0).toFixed(2)}/${(stat.seed_fact || 0).toFixed(2)}/${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(2)}\n`;
-                    text += `${(stat.pumpkin_plan || 0).toFixed(2)}/${(stat.pumpkin_fact || 0).toFixed(2)}/${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(2)}\n`;
-                    text += `${(stat.peanut_plan || 0).toFixed(2)}/${(stat.peanut_fact || 0).toFixed(2)}/${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(2)}\n`;
-                    text += `АКБ: ${totalAkb}\n`;
-                    text += `Новые ТТ: ${stat.newtt || 0}\n`;
-                    text += `Микс: ${stat.mix || 0}\n`;
-                    text += `N + 1: ${stat.npone || 0}\n`;
-                    text += `Установка стеллажа: ${stat.set_shelving || 0}\n`;
-                    text += `ДМП: ${stat.dmp || 0}\n`;
-                    text += `Топ 5: ${stat.top_five || 0}\n`;
-                    text += `Новинки: ${stat.news || 0}\n\n`;
+                    totals.seed_plan += (stat.seed_plan || 0);
+                    totals.seed_fact += (stat.seed_fact || 0);
+                    totals.pumpkin_plan += (stat.pumpkin_plan || 0);
+                    totals.pumpkin_fact += (stat.pumpkin_fact || 0);
+                    totals.peanut_plan += (stat.peanut_plan || 0);
+                    totals.peanut_fact += (stat.peanut_fact || 0);
+                    totals.akb1 += (stat.akb1 || 0);
+                    totals.akb2 += (stat.akb2 || 0);
+                    totals.newtt += (stat.newtt || 0);
+                    totals.mix += (stat.mix || 0);
+                    totals.npone += (stat.npone || 0);
+                    totals.set_shelving += (stat.set_shelving || 0);
+                    totals.dmp += (stat.dmp || 0);
+                    totals.top_five += (stat.top_five || 0);
+                    totals.news += (stat.news || 0);
                 });
+
+                // Вычисляем разности
+                const seedDif = totals.seed_fact - totals.seed_plan;
+                const pumpkinDif = totals.pumpkin_fact - totals.pumpkin_plan;
+                const peanutDif = totals.peanut_fact - totals.peanut_plan;
+                const totalAkb = totals.akb1 + totals.akb2;
+
+                let text = `г.Тихорецк Краснодарский край.\n${onlyUser ? 'МОИ ДАННЫЕ' : 'ДАННЫЕ ПО РЕГИОНУ'} за ${formattedDate} (Отчетов: ${stats.length})\n\n`;
+
+                text += `🌻 Семечка: ${totals.seed_plan.toFixed(2)}/${totals.seed_fact.toFixed(2)}/${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(2)}\n`;
+                text += `🎃 Тыква: ${totals.pumpkin_plan.toFixed(2)}/${totals.pumpkin_fact.toFixed(2)}/${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(2)}\n`;
+                text += `🥜 Арахис: ${totals.peanut_plan.toFixed(2)}/${totals.peanut_fact.toFixed(2)}/${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(2)}\n`;
+                text += `АКБ: ${totalAkb}\n`;
+                text += `Новые ТТ: ${totals.newtt}\n`;
+                text += `Микс: ${totals.mix}\n`;
+                text += `N + 1: ${totals.npone}\n`;
+                text += `Установка стеллажа: ${totals.set_shelving}\n`;
+                text += `ДМП: ${totals.dmp}\n`;
+                text += `Топ 5: ${totals.top_five}\n`;
+                text += `Новинки: ${totals.news}\n\n`;
 
                 const button = document.querySelector('.copy-button');
                 
@@ -836,6 +871,3 @@
                 alert('Ошибка при загрузке данных для копирования');
             }
         }
-</script>
-</body>
-</html>
