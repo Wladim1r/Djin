@@ -331,6 +331,26 @@
             text-align: center;
         }
 
+        .copy-button {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+
+        .copy-button.copied {
+            background-color: #28a745;
+        }
+
         /* Адаптивные стили */
         @media (max-width: 768px) {
             body {
@@ -645,20 +665,20 @@
                 tableRows += `
                     <tr>
                         <td>${stat.name || 'Без названия'}</td>
-                        <td class="seed-col">${(stat.seed_plan || 0).toFixed(3)}</td>
-                        <td class="seed-col">${(stat.seed_fact || 0).toFixed(3)}</td>
+                        <td class="seed-col">${(stat.seed_plan || 0).toFixed(2)}</td>
+                        <td class="seed-col">${(stat.seed_fact || 0).toFixed(2)}</td>
                         <td class="seed-col ${seedDif >= 0 ? 'positive' : 'negative'}">
-                            ${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(3)}
+                            ${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(2)}
                         </td>
-                        <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(3)}</td>
-                        <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(3)}</td>
+                        <td class="pumpkin-col">${(stat.pumpkin_plan || 0).toFixed(2)}</td>
+                        <td class="pumpkin-col">${(stat.pumpkin_fact || 0).toFixed(2)}</td>
                         <td class="pumpkin-col ${pumpkinDif >= 0 ? 'positive' : 'negative'}">
-                            ${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(3)}
+                            ${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(2)}
                         </td>
-                        <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(3)}</td>
-                        <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(3)}</td>
+                        <td class="peanut-col">${(stat.peanut_plan || 0).toFixed(2)}</td>
+                        <td class="peanut-col">${(stat.peanut_fact || 0).toFixed(2)}</td>
                         <td class="peanut-col ${peanutDif >= 0 ? 'positive' : 'negative'}">
-                            ${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(3)}
+                            ${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(2)}
                         </td>
                         <td>${stat.akb1 || 0}</td>
                         <td>${stat.akb2 || 0}</td>
@@ -680,6 +700,7 @@
                 <div class="stats-table-container">
                     <div class="stats-table-title">
                         📋 ${reportTitle} за ${formatDateForDisplay(displayDate)}${countSuffix}
+                        <button class="copy-button" onclick="copyStatsForDate('${date}')">📋 Копировать</button>
                     </div>
         
                     <table class="stats-table">
@@ -717,6 +738,103 @@
                     </table>
                 </div>
             `;
+        }
+
+        async function copyStatsForDate(date) {
+            try {
+                const toggleUserStats = document.getElementById('toggleUserStats');
+                const onlyUser = toggleUserStats ? toggleUserStats.checked : true;
+                
+                const response = await fetch(`${API_BASE_URL}/month?date=${date}&user=${onlyUser}`);
+                if (response.status === 404) {
+                    alert(onlyUser ? 'У вас нет данных за выбранную дату' : 'Нет данных по региону за выбранную дату');
+                    return;
+                }
+                if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+        
+                const stats = await response.json();
+                
+                if (!stats || stats.length === 0) {
+                    alert(onlyUser ? 'У вас нет данных за выбранную дату' : 'Нет данных по региону за выбранную дату');
+                    return;
+                }
+
+                const displayDate = new Date(date + 'T00:00:00');
+                const formattedDate = displayDate.toLocaleDateString('ru-RU', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+
+                let text = `г.Тихорецк Краснодарский край\n${onlyUser ? 'МОИ ДАННЫЕ' : 'ДАННЫЕ ПО РЕГИОНУ'} за ${formattedDate} (Отчетов: ${stats.length})\n\n`;
+
+                stats.forEach(stat => {
+                    const seedDif = (stat.seed_fact || 0) - (stat.seed_plan || 0);
+                    const pumpkinDif = (stat.pumpkin_fact || 0) - (stat.pumpkin_plan || 0);
+                    const peanutDif = (stat.peanut_fact || 0) - (stat.peanut_plan || 0);
+                    const totalAkb = (stat.akb1 || 0) + (stat.akb2 || 0);
+
+                    text += `${stat.name || 'Без названия'}:\n`;
+                    text += `${(stat.seed_plan || 0).toFixed(2)}/${(stat.seed_fact || 0).toFixed(2)}/${seedDif >= 0 ? '+' : ''}${seedDif.toFixed(2)}\n`;
+                    text += `${(stat.pumpkin_plan || 0).toFixed(2)}/${(stat.pumpkin_fact || 0).toFixed(2)}/${pumpkinDif >= 0 ? '+' : ''}${pumpkinDif.toFixed(2)}\n`;
+                    text += `${(stat.peanut_plan || 0).toFixed(2)}/${(stat.peanut_fact || 0).toFixed(2)}/${peanutDif >= 0 ? '+' : ''}${peanutDif.toFixed(2)}\n`;
+                    text += `АКБ: ${totalAkb}\n`;
+                    text += `Новые ТТ: ${stat.newtt || 0}\n`;
+                    text += `Микс: ${stat.mix || 0}\n`;
+                    text += `N + 1: ${stat.npone || 0}\n`;
+                    text += `Установка стеллажа: ${stat.set_shelving || 0}\n`;
+                    text += `ДМП: ${stat.dmp || 0}\n`;
+                    text += `Топ 5: ${stat.top_five || 0}\n`;
+                    text += `Новинки: ${stat.news || 0}\n\n`;
+                });
+
+                const button = document.querySelector('.copy-button');
+                
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(text);
+                    } else {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = text;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        
+                        const successful = document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        if (!successful) {
+                            throw new Error('execCommand failed');
+                        }
+                    }
+                    
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Скопировано!';
+                    button.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.classList.remove('copied');
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error('Ошибка копирования: ', err);
+                    
+                    const userAgent = navigator.userAgent.toLowerCase();
+                    if (userAgent.includes('mobile') || userAgent.includes('android') || userAgent.includes('iphone')) {
+                        alert('Скопируйте текст:\n\n' + text);
+                    } else {
+                        prompt('Нажмите Ctrl+C для копирования:', text);
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке данных для копирования:', error);
+                alert('Ошибка при загрузке данных для копирования');
+            }
         }
 </script>
 </body>

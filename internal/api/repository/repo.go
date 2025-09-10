@@ -74,17 +74,20 @@ func (r *djnRepo) GetStatsByMonthAndUser(
 func (r *djnRepo) PatchStat(regionID uint, stat *models.StatDaily) error {
 	// Сначала получаем старые данные для конкретной даты
 	var oldStat models.StatDaily
-	today := time.Now().Format("2006-01-02")
+	date := stat.Date
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	}
 
-	if err := r.db.Where("region_id = ? AND name = ? AND date = ?", regionID, stat.Name, today).First(&oldStat).Error; err != nil {
+	if err := r.db.Where("region_id = ? AND name = ? AND date = ?", regionID, stat.Name, date).First(&oldStat).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errs.ErrNotFound
 		}
 		return fmt.Errorf("%w: failed to get old record %v", errs.ErrDBOperation, err)
 	}
 
-	// Обновляем запись за сегодня
-	result := r.db.Where("region_id = ? AND name = ? AND date = ?", regionID, stat.Name, today).Updates(stat)
+	// Обновляем запись за указанную дату
+	result := r.db.Where("region_id = ? AND name = ? AND date = ?", regionID, stat.Name, date).Updates(stat)
 	if result.Error != nil {
 		return fmt.Errorf("%w: failed update %v", errs.ErrDBOperation, result.Error)
 	}

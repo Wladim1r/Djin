@@ -150,7 +150,11 @@ func (h *DjnHandler) PostStat(c *gin.Context) {
 	// Проставляем обязательные поля
 	obj.Name = username
 	obj.RegionID = regionID
-	obj.Date = time.Now().Format("2006-01-02")
+
+	// Если дата не указана в запросе, используем текущую дату
+	if obj.Date == "" {
+		obj.Date = time.Now().Format("2006-01-02")
+	}
 
 	if err := h.serv.PostStat(obj); err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{

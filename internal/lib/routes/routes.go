@@ -64,9 +64,6 @@ func SetupRoutes(
 		protected.GET("/inputStat", func(c *gin.Context) {
 			c.File("./web/static/inputStat.html")
 		})
-		protected.GET("/viewStats", func(c *gin.Context) {
-			c.File("./web/static/viewStats.html")
-		})
 		protected.GET("/monthStat", func(c *gin.Context) {
 			c.File("./web/static/monthStat.html")
 		})
