@@ -22,7 +22,7 @@ internal/
 
 ## 🛠️ Технологический стек
 
-- **Backend**: Go 1.x
+- **Backend**: Go 1.20+
 - **Web Framework**: Gin
 - **ORM**: GORM
 - **База данных**: PostgreSQL
